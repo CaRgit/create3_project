@@ -14,19 +14,6 @@ from geometry_msgs.msg import Twist
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
-class ColorPalette():
-    """ Helper Class to define frequently used colors"""
-    def __init__(self):
-        self.red = LedColor(red=255,green=0,blue=0)
-        self.green = LedColor(red=0,green=255,blue=0)
-        self.blue = LedColor(red=0,green=0,blue=255)
-        self.yellow = LedColor(red=255,green=255,blue=0)
-        self.pink = LedColor(red=255,green=0,blue=255)
-        self.cyan = LedColor(red=0,green=255,blue=255)
-        self.purple = LedColor(red=127,green=0,blue=255)
-        self.white = LedColor(red=255,green=255,blue=255)
-        self.grey = LedColor(red=189,green=189,blue=189)
-
 class Move():
     """ Class to tell the robot to move as part of dance sequence"""
     def __init__(self, x_m_s, theta_degrees_second):
@@ -41,35 +28,24 @@ class Move():
         self.x = x_m_s
         self.theta = math.radians(theta_degrees_second)
 
-class Lights():
-    """ Class to tell the robot to set lightring lights as part of dance sequence"""
-    def __init__(self, led_colors):
-        """
-        Parameters
-        ----------
-        led_colors : list of LedColor
-            The list of 6 LedColors corresponding to the 6 LED lights on the lightring
-        """
-        self.led_colors = led_colors
-
-class FinishedDance(Exception):
+class FinishedMove(Exception):
     """ Class to tell the robot dance sequence has finished"""
     pass
 
-class DanceChoreographer():
-    """ Class to manage a dance sequence, returning current actions to perform"""
-    def __init__(self, dance_sequence):
+class MoveChoreographer():
+    """ Class to manage a move sequence, returning current actions to perform"""
+    def __init__(self, move_sequence):
         '''
         Parameters
         ----------
-        dance_sequence : list of (time, action) pairs
-            The time is time since start_dance was called to initiate action,
-            the action is one of the classes above [Move,Lights,FinishedDance]
+        move_sequence : list of (time, action) pairs
+            The time is time since start_move was called to initiate action,
+            the action is one of the classes above [Move,FinishedDance]
         '''    
-        self.dance_sequence = dance_sequence
+        self.move_sequence = move_sequence
         self.action_index = 0
 
-    def start_dance(self, time):
+    def start_move(self, time):
         '''
         Parameters
         ----------
