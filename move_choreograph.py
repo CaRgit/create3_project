@@ -23,9 +23,6 @@ class Move():
         self.x = x_m_s
         self.theta = math.radians(theta_degrees_second)
 
-class FinishedMove(Exception):
-    pass
-
 class MoveChoreographer():
     def get_next_action(self):
         action = Move(0.1, 90)
