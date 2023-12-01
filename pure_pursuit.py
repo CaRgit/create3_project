@@ -2,7 +2,7 @@
 
 import rclpy
 import sys
-from create3_examples_py.dance import dance_choreograph as dc
+import move_choreograph as dc
 
 def main(args=None):
     rclpy.init(args=args)
