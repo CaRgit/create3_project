@@ -165,7 +165,7 @@ class DanceCommandPublisher(Node):
                 twist.angular.z = next_action.theta
                 self.last_twist = twist
                 self.get_logger().info('Time %f New move action: %f, %f' % (current_time.nanoseconds / float(1e9), twist.linear.x, twist.angular.z))
-            elif isinstance(next_action, Lights):
+            #elif isinstance(next_action, Lights):
                 #lightring = LightringLeds()
                 #lightring.override_system = True
                 #lightring.leds = next_action.led_colors
