@@ -14,18 +14,18 @@ from geometry_msgs.msg import Twist
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
-class ColorPalette():
-    """ Helper Class to define frequently used colors"""
-    def __init__(self):
-        self.red = LedColor(red=255,green=0,blue=0)
-        self.green = LedColor(red=0,green=255,blue=0)
-        self.blue = LedColor(red=0,green=0,blue=255)
-        self.yellow = LedColor(red=255,green=255,blue=0)
-        self.pink = LedColor(red=255,green=0,blue=255)
-        self.cyan = LedColor(red=0,green=255,blue=255)
-        self.purple = LedColor(red=127,green=0,blue=255)
-        self.white = LedColor(red=255,green=255,blue=255)
-        self.grey = LedColor(red=189,green=189,blue=189)
+#class ColorPalette():
+#    """ Helper Class to define frequently used colors"""
+#    def __init__(self):
+#        self.red = LedColor(red=255,green=0,blue=0)
+#        self.green = LedColor(red=0,green=255,blue=0)
+#        self.blue = LedColor(red=0,green=0,blue=255)
+#        self.yellow = LedColor(red=255,green=255,blue=0)
+#        self.pink = LedColor(red=255,green=0,blue=255)
+#        self.cyan = LedColor(red=0,green=255,blue=255)
+#        self.purple = LedColor(red=127,green=0,blue=255)
+#        self.white = LedColor(red=255,green=255,blue=255)
+#        self.grey = LedColor(red=189,green=189,blue=189)
 
 class Move():
     """ Class to tell the robot to move as part of dance sequence"""
