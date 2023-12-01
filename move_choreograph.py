@@ -14,19 +14,6 @@ from geometry_msgs.msg import Twist
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
-#class ColorPalette():
-#    """ Helper Class to define frequently used colors"""
-#    def __init__(self):
-#        self.red = LedColor(red=255,green=0,blue=0)
-#        self.green = LedColor(red=0,green=255,blue=0)
-#        self.blue = LedColor(red=0,green=0,blue=255)
-#        self.yellow = LedColor(red=255,green=255,blue=0)
-#        self.pink = LedColor(red=255,green=0,blue=255)
-#        self.cyan = LedColor(red=0,green=255,blue=255)
-#        self.purple = LedColor(red=127,green=0,blue=255)
-#        self.white = LedColor(red=255,green=255,blue=255)
-#        self.grey = LedColor(red=189,green=189,blue=189)
-
 class Move():
     """ Class to tell the robot to move as part of dance sequence"""
     def __init__(self, x_m_s, theta_degrees_second):
@@ -110,8 +97,6 @@ class DanceCommandPublisher(Node):
         timer_period = 0.05  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.last_twist = Twist()
-        #self.last_lightring = LightringLeds()
-        #self.last_lightring.override_system = False
         self.ready = False
         self.wait_on_params = False
         self.last_wait_subscriber_printout = None
@@ -157,7 +142,6 @@ class DanceCommandPublisher(Node):
         # get actions from dance_choreographer given time
         next_actions = self.dance_choreographer.get_next_actions(current_time)
         twist = self.last_twist
-        #lightring = self.last_lightring
         for next_action in next_actions:
             if isinstance(next_action, Move):
                 twist = Twist()
@@ -165,27 +149,16 @@ class DanceCommandPublisher(Node):
                 twist.angular.z = next_action.theta
                 self.last_twist = twist
                 self.get_logger().info('Time %f New move action: %f, %f' % (current_time.nanoseconds / float(1e9), twist.linear.x, twist.angular.z))
-            #elif isinstance(next_action, Lights):
-                #lightring = LightringLeds()
-                #lightring.override_system = True
-                #lightring.leds = next_action.led_colors
-                #self.last_lightring = lightring
-                #self.get_logger().info('Time %f New lights action, first led (%d,%d,%d)' % (current_time.nanoseconds / float(1e9), lightring.leds[0].red, lightring.leds[0].green, lightring.leds[0].blue))
             else:
                 twist = Twist()
                 twist.linear.x = 0.0
                 twist.angular.z = 0.0
                 self.last_twist = twist
-                #lightring = LightringLeds()
-                #lightring.override_system = False
-                #self.last_lightring = lightring
                 self.finished = True
                 self.get_logger().info('Time %f Finished Dance Sequence' % (current_time.nanoseconds / float(1e9)))
                 raise FinishedDance
 
-        #lightring.header.stamp = current_time.to_msg()
         self.vel_publisher.publish(twist)
-        #self.lights_publisher.publish(lightring)
 
     # Set safety_override to backup_only so robot can backup during dance sequence
     def send_params_request(self):
