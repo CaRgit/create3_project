@@ -28,8 +28,7 @@ class FinishedMove(Exception):
 
 class MoveChoreographer():
     def get_next_action(self):
-        action.x = 0.1
-        action.theta = 3
+        action = Move(0.1, 3)
         return action
 
 class MoveCommandPublisher(Node):
