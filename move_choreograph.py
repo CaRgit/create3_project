@@ -32,7 +32,7 @@ class MoveChoreographer():
         return action
 
 class MoveCommandPublisher(Node):
-    def__init__(self):
+    def __init__(self):
         super().__init__('move_command_publisher')
         self.vel.publisher = self.create_publisher(Twist, 'cmd_vel', 10)
     def timer_callback(self):
