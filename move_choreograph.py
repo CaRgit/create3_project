@@ -170,7 +170,7 @@ class DanceCommandPublisher(Node):
                 #lightring.override_system = True
                 #lightring.leds = next_action.led_colors
                 #self.last_lightring = lightring
-                self.get_logger().info('Time %f New lights action, first led (%d,%d,%d)' % (current_time.nanoseconds / float(1e9), lightring.leds[0].red, lightring.leds[0].green, lightring.leds[0].blue))
+                #self.get_logger().info('Time %f New lights action, first led (%d,%d,%d)' % (current_time.nanoseconds / float(1e9), lightring.leds[0].red, lightring.leds[0].green, lightring.leds[0].blue))
             else:
                 twist = Twist()
                 twist.linear.x = 0.0
