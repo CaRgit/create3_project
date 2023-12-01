@@ -6,7 +6,7 @@ import move_choreograph as dc
 
 def main(args=None):
     rclpy.init(args=args)
-    cp = dc.ColorPalette()
+    #cp = dc.ColorPalette()
     '''
     DANCE SEQUENCE is defined as a list of pairs with 
     (time to start action in seconds, action to take)
