@@ -7,7 +7,9 @@ def main(args=None):
     move_publisher = None
     try:
         move_choreographer = mc.MoveChoreographer()
+        print('Tenemos move_choreographer')
         move_publisher = mc.MoveCommandPublisher (move_choreographer)
+        print('Tenemos move_publisher')
         rclpy.spin(move_publisher)
     except KeyboardInterrupt:
         print('Caught keyboard interrupt')
