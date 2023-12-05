@@ -1,6 +1,7 @@
 # Copyright 2021 iRobot Corporation. All Rights Reserved.
 
 import math
+import random
 
 import rclpy
 from rclpy.node import Node
@@ -65,6 +66,7 @@ class DanceChoreographer():
         '''    
         self.start_time = time
         self.action_index = 0
+        last_time_into_dance = self.start_time
 
     def get_next_actions(self, time):
         '''
@@ -75,16 +77,20 @@ class DanceChoreographer():
         '''    
         time_into_dance = time - self.start_time
         time_into_dance_seconds = time_into_dance.nanoseconds / float(1e9)
+        last_time_into_dance_seconds = last_time_into_dance.nanoseconds / float (1e9)
         actions = []
         while self.action_index < len(self.dance_sequence) and time_into_dance_seconds >= self.dance_sequence[self.action_index][0]:
             actions.append(self.dance_sequence[self.action_index][1])
             self.action_index += 1
-        print ("action index =")
-        print (self.action_index)
-        print ('Acciones: ')
-        for action in actions:
-            print (action.x)
-            print (action.theta)
+        #print ("action index =")
+        #print (self.action_index)
+        #print ('Acciones: ')
+        #for action in actions:
+        #    print (action.x)
+        #    print (action.theta)
+        if time_into_dance_seconds-last_time_into_dance_seconds >= 2.0:
+            last_time_into_dance = time_into_dance
+            actions[1] = Move(round(random.uniform(0, 0.15), 2),round(random.uniform(-70, 70), 2))
         return actions
 
 class DanceCommandPublisher(Node):
