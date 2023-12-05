@@ -93,6 +93,9 @@ class DanceChoreographer():
         if time_into_dance_seconds-last_time_into_dance_seconds >= 2.0:
             last_time_into_dance = time_into_dance
             actions[1] = Move(round(random.uniform(0, 0.15), 2),round(random.uniform(-70, 70), 2))
+            for action in actions:
+                print (action.x)
+                print (action.theta)
         return actions
 
 class DanceCommandPublisher(Node):
