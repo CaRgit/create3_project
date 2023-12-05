@@ -79,6 +79,8 @@ class DanceChoreographer():
         while self.action_index < len(self.dance_sequence) and time_into_dance_seconds >= self.dance_sequence[self.action_index][0]:
             actions.append(self.dance_sequence[self.action_index][1])
             self.action_index += 1
+        print 'Acciones: '
+        print actions
         return actions
 
 class DanceCommandPublisher(Node):
