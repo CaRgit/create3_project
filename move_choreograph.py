@@ -66,7 +66,8 @@ class DanceChoreographer():
         '''    
         self.start_time = time
         self.action_index = 0
-        last_time_into_dance = self.start_time
+        last_time_into_dance = time
+        is_start = true
 
     def get_next_actions(self, time):
         '''
@@ -89,8 +90,10 @@ class DanceChoreographer():
         #    print (action.x)
         #    print (action.theta)
         actions = []
-        print ("Segundos:", time_into_dance_seconds-last_time_into_dance_seconds)
-        if time_into_dance_seconds-last_time_into_dance_seconds >= 2.0:
+        print ("Tiempo:", time_into_dance_seconds-last_time_into_dance_seconds)
+        if is_start or time_into_dance_seconds-last_time_into_dance_seconds >= 2.0:
+            if is_start:
+                is_start = false
             last_time_into_dance = time_into_dance
             actions[1] = Move(round(random.uniform(0, 0.15), 2),round(random.uniform(-70, 70), 2))
             for action in actions:
