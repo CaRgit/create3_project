@@ -44,8 +44,8 @@ class GTG(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang = 1.5
-        kp_lin = 0.55
+        kp_ang = 3
+        kp_lin = 0.3
 
         if (abs(distance_to_goal) > distance_tolerance):
             new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)  
