@@ -219,14 +219,12 @@ def main(args=None):
     
     cv2.imshow("Map", img)
     click_coordinates = []
-    click_coordinates[0]=initial_position
     img_with_markers = np.copy(img)
     cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
-    while len(click_coordinates) < 2:
+    while len(click_coordinates) < 1:
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
-
-    
+        
     goal = click_coordinates[1]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
