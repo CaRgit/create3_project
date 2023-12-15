@@ -21,7 +21,8 @@ class GoToGoalInitializer(Node):
     def odom_callback(self, data):
         current_time = time.time()
         while not (current_time - self.start_time) >= 1:
-            
+            time.sleep(0.1)
+            current_time = time.time()
         if not self.initial_position_set:
             position = data.pose.pose.position
             self.initial_position = (position.x, position.y)
