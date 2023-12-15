@@ -221,7 +221,7 @@ def main(args=None):
     # GET INITIAL POSITION
     initializer = GoToGoalInitializer()
     while not initializer.initial_position_set:
-        rclpy.spin(initializer)
+        rclpy.spin_once(initializer, timeout_sec=0.1)
     initializer.destroy_node()
     initial_position = initializer.initial_position
 
