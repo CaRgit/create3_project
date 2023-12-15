@@ -23,7 +23,7 @@ class IR(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    minimal_publisher = GTG()
+    minimal_publisher = IR()
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
