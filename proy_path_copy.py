@@ -174,14 +174,14 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
     return img_with_path, nodes, start, goal
 
-def mouse_callback(event, x, y, flags, param, initial_position):
+def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
         marker_type = cv2.MARKER_CROSS
         marker_size, thickness = 10, 2
 
         if not click_coordinates:
-            start =  initial_position
+            start = (x, y)
             click_coordinates.append(start)
         else:
             goal = (x, y)
