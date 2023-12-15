@@ -20,7 +20,7 @@ class GoToGoalInitializer(Node):
 
     def odom_callback(self, data):
         current_time = time.time()
-        if not self.initial_position_set and (current_time - self.start_time) >= 5:
+        if not self.initial_position_set and (current_time - self.start_time) >= 1:
             position = data.pose.pose.position
             self.initial_position = (position.x, position.y)
             self.initial_position_set = True
@@ -46,10 +46,10 @@ class GoToGoal(Node):
 
     def go_to_goal(self):
         current_time = time.time()
-        if self.initial_run and (current_time - self.start_time) < 5:
+        if self.initial_run and (current_time - self.start_time) < 1:
             return
         if self.initial_run:
-            self.get_logger().info("Execution start after 5 seconds.")
+            self.get_logger().info("Execution start after 1 seconds.")
             self.initial_run = False
 
         goal = Odometry()
@@ -220,7 +220,8 @@ def main(args=None):
 
     # GET INITIAL POSITION
     initializer = GoToGoalInitializer()
-    rclpy.spin(initializer)
+    while not initializer.initial_position_set:
+        rclpy.spin(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
 
