@@ -216,16 +216,17 @@ def main(args=None):
     rclpy.spin_once(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
-
+    
     cv2.imshow("Map", img)
     click_coordinates = []
+    click_coordinates[0]=initial_position
     img_with_markers = np.copy(img)
-    cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers], initial_position)
+    cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
     while len(click_coordinates) < 2:
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
 
-    start = click_coordinates[0]
+    
     goal = click_coordinates[1]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
