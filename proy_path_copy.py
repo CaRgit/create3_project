@@ -9,7 +9,6 @@ import numpy as np
 import random
 import time
 
-
 class GoToGoalInitializer(Node):
     def __init__(self):
         super().__init__("GoToGoalInitializerNode")
@@ -104,33 +103,27 @@ class GoToGoal(Node):
         self.get_logger().info("End of the goal list ({})".format(self.current_goal_index))
         self.get_logger().info("Current position: {}, {}".format(self.odom.pose.pose.position.x, self.odom.pose.pose.position.y))
 
-
 class RRTStarNode:
     def __init__(self, x, y):
         self.x, self.y = x, y
         self.parent = None
         self.cost = 0.0
 
-
 def is_valid_point(img, x, y, robot_radius):
     mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), robot_radius, 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
-
 
 def nearest_node(nodes, x, y):
     distances = [(node.x - x) ** 2 + (node.y - y) ** 2 for node in nodes]
     return nodes[np.argmin(distances)]
 
-
 def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
-
 def has_collision(img, x1, y1, x2, y2, robot_radius):
     points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
     return any(not is_valid_point(img, int(x), int(y), robot_radius) for x, y in points)
-
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_radius):
     nodes = [RRTStarNode(*start)]
@@ -181,7 +174,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
     return img_with_path, nodes, start, goal
 
-
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
@@ -199,7 +191,6 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-
 def draw_markers_on_image(img, start, goal):
     img_with_markers = np.copy(img)
     marker_params = [(start, 'start (auto)'), (goal, 'goal')]
@@ -209,7 +200,6 @@ def draw_markers_on_image(img, start, goal):
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     return img_with_markers
-
 
 def main(args=None):
     rclpy.init(args=args)
@@ -235,7 +225,7 @@ def main(args=None):
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
 
-    # No need to manually select initial position as it will be set automatically from odometry
+    start = initial_position
     goal = click_coordinates[0]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
