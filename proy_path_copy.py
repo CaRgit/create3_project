@@ -25,7 +25,7 @@ class GoToGoalInitializer(Node):
             self.initial_position = (position.x, position.y)
             self.initial_position_set = True
             self.get_logger().info("Initial position set: {}".format(self.initial_position))
-            quit()
+            
 
 
 class GoToGoal(Node):
