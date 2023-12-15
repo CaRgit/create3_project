@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from irobot_create_msgs.msg import IrIntensityVector
+from irobot_create_msgs.msg import IrIntensity
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import sys
 import math
