@@ -20,7 +20,7 @@ class IR(Node):
         print("funciona")
 
     def check_hazard(self):
-        #print(self.ir_intensity[0].value)
+        print(self.ir_intensity[0].value)
         print("funciona")
         
 def main(args=None):
