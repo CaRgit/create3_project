@@ -181,7 +181,7 @@ def mouse_callback(event, x, y, flags, param):
         marker_size, thickness = 10, 2
 
         if not click_coordinates:
-            start = (x, y)
+            start =  initial_position
             click_coordinates.append(start)
         else:
             goal = (x, y)
@@ -221,12 +221,12 @@ def main(args=None):
     click_coordinates = []
     img_with_markers = np.copy(img)
     cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
-    while len(click_coordinates) < 1:
+    while len(click_coordinates) < 2:
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
 
-    start = initial_position
-    goal = click_coordinates[0]
+    start = click_coordinates[0]
+    goal = click_coordinates[1]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
