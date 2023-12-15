@@ -20,7 +20,9 @@ class GoToGoalInitializer(Node):
 
     def odom_callback(self, data):
         current_time = time.time()
-        if not self.initial_position_set and (current_time - self.start_time) >= 1:
+        while not (current_time - self.start_time) >= 1:
+            time.sleep(0.1) 
+        if not self.initial_position_set:
             position = data.pose.pose.position
             self.initial_position = (position.x, position.y)
             self.initial_position_set = True
@@ -220,8 +222,7 @@ def main(args=None):
 
     # GET INITIAL POSITION
     initializer = GoToGoalInitializer()
-    while not initializer.initial_position_set:
-        rclpy.spin_once(initializer, timeout_sec=0.1)
+    rclpy.spin_once(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
 
