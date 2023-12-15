@@ -44,12 +44,17 @@ class GTG(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang = 3
-        kp_lin = 0.3
+        kp_ang = 10
+        kp_lin = 5
 
         if (abs(distance_to_goal) > distance_tolerance):
-            new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)  
-            new_vel.linear.x = max(min(kp_lin * distance_to_goal, 1.0), 0.0)
+            # new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)
+            new_vel.angular.z = kp_ang * angle_error
+            #if abs(angle_error) < math.pi:
+                # new_vel.linear.x = max(min(kp_lin * distance_to_goal, 1.0), 0.0)
+            new_vel.linear.x = (1 - abs(angle_error) / math.pi) * kp_lin * distance_to_goal
+            #else:
+            #    new_vel.linear.x = 0.0
         else:
             self.get_logger().info("Objetivo {} alcanzado".format(self.current_goal_index))
             self.get_logger().info("Estoy en: {}, {}".format(self.odom.pose.pose.position.x, self.odom.pose.pose.position.y))
