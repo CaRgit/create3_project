@@ -174,6 +174,10 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
     return img_with_path, nodes, start, goal
 
+
+
+
+
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
@@ -200,6 +204,11 @@ def draw_markers_on_image(img, start, goal):
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     return img_with_markers
+
+
+
+
+
 
 def main(args=None):
     rclpy.init(args=args)
