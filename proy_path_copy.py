@@ -14,7 +14,7 @@ class GoToGoalInitializer(Node):
     def __init__(self):
         super().__init__("GoToGoalInitializerNode")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.initial_position = None
+        #self.initial_position = None
         self.initial_position_set = False
         self.start_time = time.time()
 
@@ -25,6 +25,7 @@ class GoToGoalInitializer(Node):
             self.initial_position = (position.x, position.y)
             self.initial_position_set = True
             self.get_logger().info("Initial position set: {}".format(self.initial_position))
+            quit()
 
 
 class GoToGoal(Node):
@@ -219,10 +220,9 @@ def main(args=None):
 
     # GET INITIAL POSITION
     initializer = GoToGoalInitializer()
-    rclpy.spin_once(initializer)
+    rclpy.spin(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
-    print(initial_position)
 
     cv2.imshow("Map", img)
     click_coordinates = []
