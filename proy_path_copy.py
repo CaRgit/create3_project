@@ -234,7 +234,7 @@ def main(args=None):
     # No need to manually select initial position as it will be set automatically from odometry
     goal = click_coordinates[0]
 
-    img_with_path, nodes, _, _ = rrt_star(img, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
+    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
     for point in [None, goal]:  # Initial position is set automatically
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
