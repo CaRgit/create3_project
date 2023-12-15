@@ -174,7 +174,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
     return img_with_path, nodes, start, goal
 
-def mouse_callback(event, x, y, flags, param):
+def mouse_callback(event, x, y, flags, param, initial_position):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
         marker_type = cv2.MARKER_CROSS
@@ -220,7 +220,7 @@ def main(args=None):
     cv2.imshow("Map", img)
     click_coordinates = []
     img_with_markers = np.copy(img)
-    cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
+    cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers], initial_position)
     while len(click_coordinates) < 2:
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
