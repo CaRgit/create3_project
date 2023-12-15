@@ -222,6 +222,7 @@ def main(args=None):
     rclpy.spin_once(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
+    print(initial_position)
 
     cv2.imshow("Map", img)
     click_coordinates = []
