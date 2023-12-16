@@ -218,7 +218,7 @@ def main(args=None):
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    cv2.drawMarker(img_with_markers, (int(start[0])*100, int(start[1]))*100, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+    cv2.drawMarker(img_with_markers, (int(start[0]*100), int(start[1]*100)), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
     click_coordinates = []
