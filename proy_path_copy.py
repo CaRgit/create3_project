@@ -183,7 +183,6 @@ def mouse_callback(event, x, y, flags, params):
         marker_type = cv2.MARKER_CROSS
         marker_size, thickness = 10, 2
         draw_marker_on_image(img_with_markers, 'goal', goal)
-    return goal
 
 def draw_marker_on_image(img_with_markers, label, point):
     cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
