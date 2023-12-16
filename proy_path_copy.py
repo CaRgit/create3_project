@@ -228,12 +228,12 @@ def main(args=None):
         cv2.waitKey(1)
         
     goal = click_coordinates[0]
-    print(start)
+    print(int(start)*0.01)
     print(goal)
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
-    for point in [None, goal]:  # Initial position is set automatically
+    for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
 
     cv2.destroyAllWindows()
@@ -241,8 +241,7 @@ def main(args=None):
     cv2.imshow("Map with RRT*", img_with_path)
     cv2.waitKey(0)
 
-    img_final_with_markers = draw_marker_on_image(img_with_path, None, goal)  # Initial position is set automatically
-
+    img_final_with_markers = draw_marker_on_image(img_with_path, start, goal)
     if len(img_final_with_markers.shape) == 2 or img_final_with_markers.shape[2] == 1:
         img_final_with_markers = cv2.cvtColor(img_final_with_markers, cv2.COLOR_GRAY2BGR)
 
