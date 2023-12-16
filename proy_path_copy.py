@@ -207,38 +207,25 @@ def main(args=None):
     start= (int(initializer.initial_position[0]*100), int(initializer.initial_position[1]*100))
 
     
-    img_with_markers = np.copy(img)
-    draw_marker_on_image(img_with_markers, 'start', start)
-    #cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
-    cv2.imshow("Map", img_with_markers)
+    img_with_path = np.copy(img)
+    draw_marker_on_image(img_with_path, 'start', start)
+    #cv2.drawMarker(img_with_path, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+    cv2.imshow("Map RRT*", img_with_path)
     
     goal = []
-    cv2.setMouseCallback("Map", mouse_callback, [img_with_markers, goal])
+    cv2.setMouseCallback("Map", mouse_callback, [img_with_path, goal])
     while len(goal) < 1:
         cv2.waitKey(1)
     goal=goal[0]
-    print(start)
-    print(goal)
-    cv2.imshow("Map", img_with_markers)
     
-
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
-    for point in [start, goal]:
-        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+    #cv2.destroyAllWindows()
 
-    cv2.destroyAllWindows()
-
-    cv2.imshow("Map with RRT*", img_with_path)
-    cv2.waitKey(0)
-
-    img_final_with_markers = draw_marker_on_image(img_with_path, start, goal)
-    if len(img_final_with_markers.shape) == 2 or img_final_with_markers.shape[2] == 1:
-        img_final_with_markers = cv2.cvtColor(img_final_with_markers, cv2.COLOR_GRAY2BGR)
-
+    #cv2.imshow("Map RRT*", img_with_path)
+    #cv2.waitKey(0)
     cv2.imwrite("final_solution.png", img_final_with_markers, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
-    initial_position = None  # Initial position is set automatically
     minimal_publisher = GoToGoal(initial_position)
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
