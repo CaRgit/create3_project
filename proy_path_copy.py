@@ -182,7 +182,7 @@ def mouse_callback(event, x, y, flags, params):
         goal.append((x, y))
         marker_type = cv2.MARKER_CROSS
         marker_size, thickness = 10, 2
-        draw_marker_on_image(img_with_markers, 'goal', goal)
+        draw_marker_on_image(img_with_markers, 'goal', goal[0])
 
 def draw_marker_on_image(img_with_markers, label, point):
     cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
@@ -226,7 +226,7 @@ def main(args=None):
     #cv2.waitKey(0)
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
-    minimal_publisher = GoToGoal(initial_position)
+    minimal_publisher = GoToGoal()
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
