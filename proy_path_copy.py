@@ -216,7 +216,7 @@ def main(args=None):
     goal=goal[0]
     
     img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
-    print(trayectory)
+    print(trajectory)
     
     draw_marker_on_image(img_with_path, 'start', start)
     draw_marker_on_image(img_with_path, 'goal', goal)
