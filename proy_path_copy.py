@@ -213,7 +213,7 @@ def main(args=None):
     cv2.imshow("Map RRT*", img_with_path)
     
     goal = []
-    cv2.setMouseCallback("Map", mouse_callback, [img_with_path, goal])
+    cv2.setMouseCallback("Map RRT*", mouse_callback, [img_with_path, goal])
     while len(goal) < 1:
         cv2.waitKey(1)
     goal=goal[0]
