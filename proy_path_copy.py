@@ -212,7 +212,7 @@ def main(args=None):
     #cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
-    click_coordinates = []
+    goal = []
     goal=cv2.setMouseCallback("Map", mouse_callback, img_with_markers)
     while len(goal) < 1:
         cv2.waitKey(1)
