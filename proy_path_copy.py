@@ -28,13 +28,13 @@ class GoToGoalInitializer(Node):
 
 
 class GoToGoal(Node):
-    def __init__(self, trajectory):
+    def __init__(self, points):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
-        self.path = trajectory
+        self.path = points
         self.current_goal_index = 0
         self.start_time = time.time()
         self.initial_run = True
@@ -125,7 +125,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
     nodes = [RRTStarNode(*start)]
     img_with_path = np.copy(img)
     goal_reached = False
-    trajectory = []
+    points = []
 
     for _ in range(max_iter):
         x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
@@ -161,10 +161,9 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        trajectory.append((float(current_node.x * 0.01), float(current_node.y * 0.01)))
+                        points.append((float(current_node.x * 0.01), float(current_node.y * 0.01)))
                         current_node = current_node.parent
-
-                    trajectory.reverse()  # Reverse the trajectory to start from the initial point
+                    points.reverse()  # Reverse the trajectory to start from the initial point
 
                     for node in nodes:
                         if node.parent is not None:
@@ -224,7 +223,7 @@ def main(args=None):
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
     
 
-    minimal_publisher = GoToGoal(trajectory)
+    minimal_publisher = GoToGoal(points)
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
