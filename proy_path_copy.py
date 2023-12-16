@@ -13,7 +13,7 @@ class GoToGoalInitializer(Node):
     def __init__(self):
         super().__init__("GoToGoalInitializerNode")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        #self.initial_position = None
+        self.initial_position = None
         self.initial_position_set = False
         self.start_time = time.time()
 
@@ -22,10 +22,9 @@ class GoToGoalInitializer(Node):
         while not (current_time - self.start_time) >= 1:
             time.sleep(0.1)
             current_time = time.time()
-        if not self.initial_position_set:
+        if self.initial_position_set is None:
             position = data.pose.pose.position
             self.initial_position = (position.x, position.y)
-            self.initial_position_set = True
             self.get_logger().info("Initial position set: {}".format(self.initial_position))
             
 
@@ -42,6 +41,7 @@ class GoToGoal(Node):
         self.start_time = time.time()
         self.initial_run = True
         self.initial_position = initial_position
+        self.goal=goal
 
     def odom_callback(self, data):
         self.odom = data
@@ -225,6 +225,14 @@ def main(args=None):
     rclpy.spin_once(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
+
+    # Asigna la posición inicial directamente a la posición de inicio (start)
+    start = initial_position
+
+    # Muestra la imagen con la posición inicial marcada
+    img_with_markers = draw_markers_on_image(img, start, None)
+    cv2.imshow("Map", img_with_markers)
+    cv2.waitKey(1)
     
     cv2.imshow("Map", img)
     click_coordinates = []
