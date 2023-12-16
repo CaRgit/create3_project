@@ -195,8 +195,8 @@ def mouse_callback(event, x, y, flags, param):
 
 def draw_marker_on_image(img_with_markers, marker_params):
     for point, label in marker_params:
-        cv2.drawMarker(img_with_markers, (float(round(point[0],2)), (float(round(point[1],2)), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
-        cv2.putText(img_with_markers, label, (float(round(point[0],2)) + 10, (float(round(point[1],2)) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1]), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return img_with_markers
     
 
