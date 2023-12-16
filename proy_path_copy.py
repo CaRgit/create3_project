@@ -125,6 +125,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
     nodes = [RRTStarNode(*start)]
     img_with_path = np.copy(img)
     goal_reached = False
+    trajectory = []
 
     for _ in range(max_iter):
         x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
@@ -160,15 +161,18 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+                        trajectory.append((current_node.x, current_node.y))
                         current_node = current_node.parent
+
+                    trajectory.reverse()  # Reverse the trajectory to start from the initial point
 
                     for node in nodes:
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
-                    return img_with_path, nodes, start, goal
+                    return img_with_path, trajectory, start, goal
 
-    return img_with_path, nodes, start, goal
+    return img_with_path, trajectory, start, goal
 
 def mouse_callback(event, x, y, flags, params):
     if event == cv2.EVENT_LBUTTONUP:
@@ -211,8 +215,9 @@ def main(args=None):
         cv2.waitKey(1)
     goal=goal[0]
     
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
-
+    img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
+    print(trayectory)
+    
     draw_marker_on_image(img_with_path, 'start', start)
     draw_marker_on_image(img_with_path, 'goal', goal)
     cv2.imshow("Map RRT*", img_with_path)
