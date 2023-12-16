@@ -71,15 +71,16 @@ class GoToGoal(Node):
         else:
             self.handle_goal_reached()
 
-        if self.current_goal_index >= len(self.path):
+        if self.current_goal_index > len(self.path):
             self.handle_final_goal_reached()
 
         self.cmd_vel_pub.publish(new_vel)
 
     def handle_goal_reached(self):
-        self.get_logger().info(f"Goal {self.current_goal_index+1} reached")
-        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         self.current_goal_index += 1
+        self.get_logger().info(f"Goal {self.current_goal_index} reached")
+        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
+        
 
     def handle_final_goal_reached(self):
         new_vel = Twist()
