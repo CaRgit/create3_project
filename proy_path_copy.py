@@ -219,6 +219,8 @@ def main(args=None):
     
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
+    draw_marker_on_image(img_with_path, 'start', start)
+    draw_marker_on_image(img_with_path, 'goal', goal)
     cv2.imshow("Map RRT*", img_with_path)
     cv2.waitKey(0)
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
