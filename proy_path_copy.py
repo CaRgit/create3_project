@@ -28,13 +28,13 @@ class GoToGoalInitializer(Node):
 
 
 class GoToGoal(Node):
-    def __init__(self):
+    def __init__(self, nodes):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
-        self.path = []
+        self.path = nodes
         self.current_goal_index = 0
         self.start_time = time.time()
         self.initial_run = True
@@ -218,10 +218,9 @@ def main(args=None):
     cv2.imshow("Map RRT*", img_with_path)
     cv2.waitKey(0)
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+    
 
-    print(nodes)
-
-    minimal_publisher = GoToGoal()
+    minimal_publisher = GoToGoal(nodes)
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
