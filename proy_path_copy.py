@@ -193,10 +193,9 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def draw_marker_on_image(img_with_markers, marker_params):
-    for point, label in marker_params:
-        cv2.drawMarker(img_with_markers, (point[0], point[1]), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
-        cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+def draw_marker_on_image(img_with_markers, label, point):
+    cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+    cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return img_with_markers
     
 
@@ -218,7 +217,7 @@ def main(args=None):
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    draw_marker_on_image(img_with_markers, [start, 'start'])
+    draw_marker_on_image(img_with_markers, 'start', start)
     #cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
