@@ -215,6 +215,8 @@ def main(args=None):
     rclpy.spin_once(initializer)
     initializer.destroy_node()
     initial_position = initializer.initial_position
+    print(initial_position)
+    print(tuple(initial_position)
 
     # Asigna la posición inicial directamente a la posición de inicio (start)
     start = initial_position
