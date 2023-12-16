@@ -214,17 +214,12 @@ def main(args=None):
     initializer = GoToGoalInitializer()
     rclpy.spin_once(initializer)
     initializer.destroy_node()
-    initial_position = initializer.initial_position
-    print(initial_position)
-    print(tuple(initial_position))
-
-    # Asigna la posición inicial directamente a la posición de inicio (start)
-    start = initial_position
+    start= initializer.initial_position
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    marker_params = [tuple(start), ('start')]
     img_with_markers=draw_marker_on_image(img_with_markers, marker_params)
+    cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
     click_coordinates = []
