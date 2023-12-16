@@ -193,14 +193,10 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def draw_markers_on_image(img, start, goal):
-    img_with_markers = np.copy(img)
-    marker_params = [(start, 'start (auto)'), (goal, 'goal')]
-
+def draw_marker_on_image(img, mark, img_with_markers, marker_params):
     for point, label in marker_params:
         cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-
     return img_with_markers
 
 
@@ -228,13 +224,12 @@ def main(args=None):
     start = initial_position
 
     # Muestra la imagen con la posición inicial marcada
-    img_with_markers = draw_markers_on_image(img, start, None)
-    cv2.imshow("Map", img_with_markers)
-    cv2.waitKey(1)
-    
-    cv2.imshow("Map", img)
-    click_coordinates = []
     img_with_markers = np.copy(img)
+    marker_params = [('start')]
+    img_with_markers=draw_marker_on_image(img_with_markers, start, marker_params)
+    cv2.imshow("Map", img_with_markers)
+    
+    click_coordinates = []
     cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
     while len(click_coordinates) < 1:
         cv2.imshow("Map", img_with_markers)
@@ -252,7 +247,7 @@ def main(args=None):
     cv2.imshow("Map with RRT*", img_with_path)
     cv2.waitKey(0)
 
-    img_final_with_markers = draw_markers_on_image(img_with_path, None, goal)  # Initial position is set automatically
+    img_final_with_markers = draw_marker_on_image(img_with_path, None, goal)  # Initial position is set automatically
 
     if len(img_final_with_markers.shape) == 2 or img_final_with_markers.shape[2] == 1:
         img_final_with_markers = cv2.cvtColor(img_final_with_markers, cv2.COLOR_GRAY2BGR)
