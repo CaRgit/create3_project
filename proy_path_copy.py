@@ -216,7 +216,7 @@ def main(args=None):
     cv2.setMouseCallback("Map", mouse_callback, [img_with_markers, goal])
     while len(goal) < 1:
         cv2.waitKey(1)
-
+    goal=goal[0]
     print(start)
     print(goal)
     cv2.imshow("Map", img_with_markers)
