@@ -21,11 +21,8 @@ class GoToGoalInitializer(Node):
         while not (current_time - self.start_time) >= 1:
             time.sleep(0.1)
             current_time = time.time()
-        position = data.pose.pose.position
-        self.initial_position = (position.x, position.y)
-        self.get_logger().info("Initial position set: {}".format(self.initial_position))
-            
-
+        self.initial_position = (data.pose.pose.position.x, data.pose.pose.position.y)
+        self.get_logger().info(f"Initial position set: {self.initial_position}")
 
 class GoToGoal(Node):
     def __init__(self, points):
@@ -47,7 +44,7 @@ class GoToGoal(Node):
         if self.initial_run and (current_time - self.start_time) < 1:
             return
         if self.initial_run:
-            self.get_logger().info("Execution start after 1 seconds.")
+            self.get_logger().info("Execution start after 1 second.")
             self.initial_run = False
 
         goal = Odometry()
@@ -55,15 +52,10 @@ class GoToGoal(Node):
 
         new_vel = Twist()
 
-        # Calculate euclidean distance to the goal
-        distance_to_goal = math.sqrt((goal.pose.pose.position.x - self.odom.pose.pose.position.x) ** 2 + (goal.pose.pose.position.y - self.odom.pose.pose.position.y) ** 2)
-
-        # Calculate the angle to the goal
+        distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
         angle_to_goal = math.atan2(goal.pose.pose.position.y - self.odom.pose.pose.position.y, goal.pose.pose.position.x - self.odom.pose.pose.position.x)
-
         distance_tolerance = 0.1
 
-        # Calculate angle error
         yaw = math.atan2(2 * (self.odom.pose.pose.orientation.w * self.odom.pose.pose.orientation.z + self.odom.pose.pose.orientation.x * self.odom.pose.pose.orientation.y), 1 - 2 * (self.odom.pose.pose.orientation.y ** 2 + self.odom.pose.pose.orientation.z ** 2))
         angle_error = angle_to_goal - yaw
 
@@ -72,8 +64,7 @@ class GoToGoal(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang = 1.5
-        kp_lin = 0.55
+        kp_ang, kp_lin = 1.5, 0.55
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)
@@ -87,8 +78,8 @@ class GoToGoal(Node):
         self.cmd_vel_pub.publish(new_vel)
 
     def handle_goal_reached(self):
-        self.get_logger().info("Goal {} reached".format(self.current_goal_index))
-        self.get_logger().info("Current position: {}, {}".format(self.odom.pose.pose.position.x, self.odom.pose.pose.position.y))
+        self.get_logger().info(f"Goal {self.current_goal_index} reached")
+        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         self.current_goal_index += 1
 
     def handle_final_goal_reached(self):
@@ -96,8 +87,8 @@ class GoToGoal(Node):
         new_vel.linear.x = 0.0
         new_vel.angular.z = 0.0
         self.cmd_vel_pub.publish(new_vel)
-        self.get_logger().info("End of the goal list ({})".format(self.current_goal_index))
-        self.get_logger().info("Current position: {}, {}".format(self.odom.pose.pose.position.x, self.odom.pose.pose.position.y))
+        self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
+        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
 
 class RRTStarNode:
     def __init__(self, x, y):
@@ -122,10 +113,7 @@ def has_collision(img, x1, y1, x2, y2, robot_radius):
     return any(not is_valid_point(img, int(x), int(y), robot_radius) for x, y in points)
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_radius):
-    nodes = [RRTStarNode(*start)]
-    img_with_path = np.copy(img)
-    goal_reached = False
-    points = []
+    nodes, img_with_path, points = [RRTStarNode(*start)], np.copy(img), []
 
     for _ in range(max_iter):
         x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
@@ -134,99 +122,89 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
         if is_valid_point(img, int(x_new), int(y_new), robot_radius):
             node_new = RRTStarNode(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x) ** 2 + (node.y - node_new.y) ** 2) < rewiring_radius_cm]
+            near_nodes = [node for node in nodes if math.hypot(node.x - node_new.x, node.y - node_new.y) < rewiring_radius_cm]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, robot_radius):
                 node_new.parent = min_cost_node
-                node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x) ** 2 + (node_new.y - min_cost_node.y) ** 2)
+                node_new.cost = min_cost_node.cost + math.hypot(node_new.x - min_cost_node.x, node_new.y - min_cost_node.y)
 
                 for near_node in near_nodes:
-                    new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x) ** 2 + (node_new.y - near_node.y) ** 2)
+                    new_cost = node_new.cost + math.hypot(node_new.x - near_node.x, node_new.y - near_node.y)
                     if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, robot_radius):
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
                 cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
-                if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], robot_radius):
+                if not points and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], robot_radius):
                     goal_node = RRTStarNode(*goal)
                     goal_node.parent = node_new
-                    goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x) ** 2 + (goal_node.y - node_new.y) ** 2)
+                    goal_node.cost = node_new.cost + math.hypot(goal_node.x - node_new.x, goal_node.y - node_new.y)
                     nodes.append(goal_node)
                     cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
-                    goal_reached = True
 
-                if goal_reached:
+                if goal_node in nodes:
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
                         points.append((float(current_node.x * 0.01), float(current_node.y * 0.01)))
                         current_node = current_node.parent
-                    points.reverse()  # Reverse the trajectory to start from the initial point
+                    points.reverse()
 
-                    for node in nodes:
-                        if node.parent is not None:
-                            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+                    return img_with_path, points, start, goal
 
-                    return img_with_path, trajectory, start, goal
-
-    return img_with_path, trajectory, start, goal
+    return img_with_path, points, start, goal
 
 def mouse_callback(event, x, y, flags, params):
     if event == cv2.EVENT_LBUTTONUP:
         img_with_markers, goal = params
         goal.append((x, y))
-        marker_type = cv2.MARKER_CROSS
-        marker_size, thickness = 10, 2
         draw_marker_on_image(img_with_markers, 'goal', goal[0])
 
 def draw_marker_on_image(img_with_markers, label, point):
     cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return img_with_markers
-    
 
 def main(args=None):
     rclpy.init(args=args)
 
-    img_path = f'./{"mapa.png"}'
+    img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     step_size_cm = float(input("Enter step size (in cm): "))
-    max_iterations = int(1000000)
+    max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
 
-    # GET INITIAL POSITION
     initializer = GoToGoalInitializer()
     rclpy.spin_once(initializer)
     initializer.destroy_node()
-    start= (int(initializer.initial_position[0]*100), int(initializer.initial_position[1]*100))
+    start = (int(initializer.initial_position[0] * 100), int(initializer.initial_position[1] * 100))
 
-    
     img_with_path = np.copy(img)
     draw_marker_on_image(img_with_path, 'start', start)
     cv2.imshow("Map RRT*", img_with_path)
-    
+
     goal = []
     cv2.setMouseCallback("Map RRT*", mouse_callback, [img_with_path, goal])
     while len(goal) < 1:
         cv2.waitKey(1)
-    goal=goal[0]
-    
+    goal = goal[0]
+
     img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
-    
+
     draw_marker_on_image(img_with_path, 'start', start)
     draw_marker_on_image(img_with_path, 'goal', goal)
     cv2.imshow("Map RRT*", img_with_path)
     cv2.waitKey(0)
-    cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
-    
+    cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
-    minimal_publisher = GoToGoal(points)
+    minimal_publisher = GoToGoal(trajectory)
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
+
