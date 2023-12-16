@@ -176,22 +176,15 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
 
 
-def mouse_callback(event, x, y, flags, param):
+def mouse_callback(event, x, y, flags, click_coordinates, img_with_markers):
     if event == cv2.EVENT_LBUTTONUP:
-        click_coordinates, img_with_markers = param
         marker_type = cv2.MARKER_CROSS
         marker_size, thickness = 10, 2
-
-        if not click_coordinates:
-            start = (x, y)
-            click_coordinates.append(start)
-        else:
+        if click_coordinates:
             goal = (x, y)
             click_coordinates.append(goal)
+        draw_marker_on_image(img_with_markers, 'goal', goal)
 
-        for point, label in zip(click_coordinates, ['start (auto)', 'goal']):
-            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
-            cv2.putText(img_with_markers, label, (point[0] + 10, point[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
 def draw_marker_on_image(img_with_markers, label, point):
     cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
@@ -215,14 +208,14 @@ def main(args=None):
     initializer.destroy_node()
     start= (int(initializer.initial_position[0]*100), int(initializer.initial_position[1]*100))
 
-    # Muestra la imagen con la posición inicial marcada
+    
     img_with_markers = np.copy(img)
     draw_marker_on_image(img_with_markers, 'start', start)
     #cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
     click_coordinates = []
-    cv2.setMouseCallback("Map", mouse_callback, [click_coordinates, img_with_markers])
+    cv2.setMouseCallback("Map", mouse_callback, click_coordinates, img_with_markers)
     while len(click_coordinates) < 1:
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
