@@ -218,7 +218,7 @@ def main(args=None):
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    cv2.drawMarker(img_with_markers, (int(start[0]), int(start[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+    cv2.drawMarker(img_with_markers, (int(start[0])*100, int(start[1]))*100, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
     click_coordinates = []
@@ -228,7 +228,7 @@ def main(args=None):
         cv2.waitKey(1)
         
     goal = click_coordinates[0]
-    print(int(start*100))
+    print(int(start)*100)
     print(goal)
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
