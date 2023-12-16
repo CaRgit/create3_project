@@ -218,7 +218,6 @@ def main(args=None):
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    img_with_markers=draw_marker_on_image(img_with_markers, marker_params)
     cv2.drawMarker(img_with_markers, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map", img_with_markers)
     
