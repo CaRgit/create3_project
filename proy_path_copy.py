@@ -217,6 +217,11 @@ def main(args=None):
     while len(goal) < 1:
         cv2.waitKey(1)
 
+    print(start)
+    print(goal)
+    cv2.imshow("Map", img_with_markers)
+    
+
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
     for point in [start, goal]:
