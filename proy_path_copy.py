@@ -224,7 +224,7 @@ def main(args=None):
 
     #cv2.imshow("Map RRT*", img_with_path)
     #cv2.waitKey(0)
-    cv2.imwrite("final_solution.png", img_final_with_markers, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+    cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
     minimal_publisher = GoToGoal(initial_position)
     rclpy.spin(minimal_publisher)
