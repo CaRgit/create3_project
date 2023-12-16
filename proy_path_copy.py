@@ -161,7 +161,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        trajectory.append((current_node.x, current_node.y))
+                        trajectory.append((float(current_node.x * 0.01), float(current_node.y * 0.01)))
                         current_node = current_node.parent
 
                     trajectory.reverse()  # Reverse the trajectory to start from the initial point
