@@ -13,7 +13,6 @@ class GoToGoalInitializer(Node):
     def __init__(self):
         super().__init__("GoToGoalInitializerNode")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.initial_position = None
         self.initial_position_set = False
         self.start_time = time.time()
 
@@ -22,10 +21,9 @@ class GoToGoalInitializer(Node):
         while not (current_time - self.start_time) >= 1:
             time.sleep(0.1)
             current_time = time.time()
-        if self.initial_position_set is None:
-            position = data.pose.pose.position
-            self.initial_position = (position.x, position.y)
-            self.get_logger().info("Initial position set: {}".format(self.initial_position))
+        position = data.pose.pose.position
+        self.initial_position = (position.x, position.y)
+        self.get_logger().info("Initial position set: {}".format(self.initial_position))
             
 
 
