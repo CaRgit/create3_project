@@ -38,7 +38,7 @@ class GoToGoal(Node):
         self.current_goal_index = 0
         self.start_time = time.time()
         self.initial_run = True
-        self.initial_position = initial_position
+        #self.start=start
         self.goal=goal
 
     def odom_callback(self, data):
