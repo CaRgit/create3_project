@@ -176,7 +176,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
 
 
-def mouse_callback(event, x, y, img_with_markers):
+def mouse_callback(event, x, y, flags, img_with_markers):
     if event == cv2.EVENT_LBUTTONUP:
         goal.append((x, y))
         marker_type = cv2.MARKER_CROSS
