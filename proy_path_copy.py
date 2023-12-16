@@ -66,8 +66,8 @@ class GoToGoal(Node):
         kp_ang, kp_lin = 10, 5
 
         if abs(distance_to_goal) > distance_tolerance:
-            new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)
-            new_vel.linear.x = max(min(kp_lin * distance_to_goal, 1.0), 0.0)
+            new_vel.angular.z = kp_ang * angle_error
+            new_vel.linear.x = (1 - abs(angle_error) / math.pi) * kp_lin * distance_to_goal
         else:
             self.handle_goal_reached()
 
@@ -86,8 +86,7 @@ class GoToGoal(Node):
         new_vel.linear.x = 0.0
         new_vel.angular.z = 0.0
         self.cmd_vel_pub.publish(new_vel)
-        self.get_logger().info(f"End of the goal list ({self.current_goal_index+1})")
-        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
+        self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
 
 class RRTStarNode:
     def __init__(self, x, y):
