@@ -38,8 +38,6 @@ class GoToGoal(Node):
         self.current_goal_index = 0
         self.start_time = time.time()
         self.initial_run = True
-        #self.start=start
-        self.goal=goal
 
     def odom_callback(self, data):
         self.odom = data
@@ -172,10 +170,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
 
     return img_with_path, nodes, start, goal
 
-
-
-
-
 def mouse_callback(event, x, y, flags, params):
     if event == cv2.EVENT_LBUTTONUP:
         img_with_markers, goal = params
@@ -224,6 +218,8 @@ def main(args=None):
     cv2.imshow("Map RRT*", img_with_path)
     cv2.waitKey(0)
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
+    print(nodes)
 
     minimal_publisher = GoToGoal()
     rclpy.spin(minimal_publisher)
