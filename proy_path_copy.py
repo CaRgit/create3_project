@@ -227,7 +227,7 @@ def main(args=None):
         cv2.imshow("Map", img_with_markers)
         cv2.waitKey(1)
         
-    goal = click_coordinates[1]
+    goal = click_coordinates[0]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
