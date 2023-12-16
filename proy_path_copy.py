@@ -44,7 +44,6 @@ class GoToGoal(Node):
         if self.initial_run and (current_time - self.start_time) < 1:
             return
         if self.initial_run:
-            self.get_logger().info("Execution start after 1 second.")
             self.initial_run = False
 
         goal = Odometry()
@@ -64,7 +63,7 @@ class GoToGoal(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang, kp_lin = 1.5, 0.55
+        kp_ang, kp_lin = 10, 5
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = max(min(kp_ang * angle_error, 1.0), -1.0)
@@ -78,7 +77,7 @@ class GoToGoal(Node):
         self.cmd_vel_pub.publish(new_vel)
 
     def handle_goal_reached(self):
-        self.get_logger().info(f"Goal {self.current_goal_index} reached")
+        self.get_logger().info(f"Goal {self.current_goal_index+1} reached")
         self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         self.current_goal_index += 1
 
@@ -87,7 +86,7 @@ class GoToGoal(Node):
         new_vel.linear.x = 0.0
         new_vel.angular.z = 0.0
         self.cmd_vel_pub.publish(new_vel)
-        self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
+        self.get_logger().info(f"End of the goal list ({self.current_goal_index+1})")
         self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
 
 class RRTStarNode:
