@@ -28,7 +28,7 @@ class GoToGoalInitializer(Node):
 
 
 class GoToGoal(Node):
-    def __init__(self, initial_position):
+    def __init__(self):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
@@ -209,7 +209,6 @@ def main(args=None):
     
     img_with_path = np.copy(img)
     draw_marker_on_image(img_with_path, 'start', start)
-    #cv2.drawMarker(img_with_path, start, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
     cv2.imshow("Map RRT*", img_with_path)
     
     goal = []
@@ -220,10 +219,10 @@ def main(args=None):
     
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
 
-    #cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
-    #cv2.imshow("Map RRT*", img_with_path)
-    #cv2.waitKey(0)
+    cv2.imshow("Map RRT*", img_with_path)
+    cv2.waitKey(0)
     cv2.imwrite("final_solution.png",  img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
     minimal_publisher = GoToGoal()
