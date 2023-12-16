@@ -213,7 +213,7 @@ def main(args=None):
     cv2.imshow("Map", img_with_markers)
     
     goal = []
-    goal=cv2.setMouseCallback("Map", mouse_callback, img_with_markers)
+    cv2.setMouseCallback("Map", mouse_callback, img_with_markers)
     while len(goal) < 1:
         cv2.waitKey(1)
 
