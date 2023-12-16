@@ -225,7 +225,7 @@ def main(args=None):
 
     # Muestra la imagen con la posición inicial marcada
     img_with_markers = np.copy(img)
-    marker_params = [('start')]
+    marker_params = [start, ('start')]
     img_with_markers=draw_marker_on_image(img_with_markers, start, marker_params)
     cv2.imshow("Map", img_with_markers)
     
