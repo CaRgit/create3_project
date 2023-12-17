@@ -99,6 +99,7 @@ def has_collision(img, x1, y1, x2, y2, robot_radius):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_radius):
     nodes, img_with_path, points = [RRTStarNode(*start)], np.copy(img), []
+    goal_node = None
 
     for _ in range(max_iter):
         x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
