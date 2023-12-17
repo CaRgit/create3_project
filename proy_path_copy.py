@@ -33,22 +33,13 @@ class GoToGoal(Node):
         self.odom = Odometry()
         self.path = points
         self.current_goal_index = 0
-        self.start_time = time.time()
-        self.initial_run = True
 
     def odom_callback(self, data):
         self.odom = data
 
     def go_to_goal(self):
-        #current_time = time.time()
-        #if self.initial_run and (current_time - self.start_time) < 1:
-        #    return
-        #if self.initial_run:
-        #    self.initial_run = False
-
         goal = Odometry()
         goal.pose.pose.position.x, goal.pose.pose.position.y = self.path[self.current_goal_index]
-
         new_vel = Twist()
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
@@ -73,6 +64,7 @@ class GoToGoal(Node):
 
         if self.current_goal_index > len(self.path):
             self.handle_final_goal_reached()
+            print(path)
             quit()
 
         self.cmd_vel_pub.publish(new_vel)
@@ -82,7 +74,6 @@ class GoToGoal(Node):
         self.get_logger().info(f"Goal {self.current_goal_index} reached")
         self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         
-
     def handle_final_goal_reached(self):
         new_vel = Twist()
         new_vel.linear.x = 0.0
