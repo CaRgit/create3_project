@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from irobot_create_msgs.msg import IrIntensityVector
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import math
 import cv2
@@ -29,6 +30,7 @@ class GoToGoal(Node):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
@@ -37,6 +39,15 @@ class GoToGoal(Node):
 
     def odom_callback(self, data):
         self.odom = data
+
+    def ir_callback(self, msg):
+        self.ir = []
+        for reading in msg.readings:
+            intensity_value = reading.value
+            self.ir.append(intensity_value)
+        media = np.mean([self.ir[2], self.ir[3], self.ir[4]])
+        print(media)
+    
 
     def go_to_goal(self):
         goal = Odometry()
