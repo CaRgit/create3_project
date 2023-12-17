@@ -154,6 +154,9 @@ def draw_marker_on_image(img_with_markers, label, point):
 
 def main(args=None):
     rclpy.init(args=args)
+    first = True
+    end_program = True
+    choice=[]
 
     img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
@@ -161,12 +164,13 @@ def main(args=None):
     max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
-    first = True
-    end_program = True
-    choice=[]
+    
 
     while end_program:            
         if first or choice == 'C':
+            if choice == 'C':
+                rclpy.init(args=args)
+                
             initializer = GoToGoalInitializer()
             rclpy.spin_once(initializer)
             initializer.destroy_node()
