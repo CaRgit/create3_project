@@ -6,6 +6,7 @@ from irobot_create_msgs.msg import IrIntensityVector
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import sys
 import math
+import numpy as np
 
 class IR(Node):
     def __init__(self):
