@@ -34,6 +34,7 @@ class GoToGoal(Node):
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
+        self.media = 0
         self.current_goal_index = 0
         self.end_of_goals = False
 
