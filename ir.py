@@ -39,7 +39,7 @@ class IR(Node):
                 self.ir_7.append(intensity_value)
                 
             self.get_logger().info(f'Lectura {i + 1}: Intensidad: {intensity_value}')
-        media = np.mean(intensity_value)
+        media = np.mean([self.ir_1[-1], self.ir_2[-1], self.ir_3[-1], self.ir_4[-1], self.ir_5[-1], self.ir_6[-1], self.ir_7[-1]])
         print(media)
 
         
