@@ -192,7 +192,6 @@ def main(args=None):
             draw_marker_on_image(img_with_path, 'goal', goal)
             cv2.imshow("Map RRT*", img_with_path)
             cv2.waitKey(1)
-            close
             cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
         
             #minimal_publisher = GoToGoal(trajectory)
