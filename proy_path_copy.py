@@ -32,7 +32,6 @@ class GoToGoal(Node):
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
-        print(self.path)
         self.current_goal_index = 0
 
     def odom_callback(self, data):
@@ -61,25 +60,19 @@ class GoToGoal(Node):
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = (1 - abs(angle_error) / math.pi) * kp_lin * distance_to_goal
         else:
-            self.handle_goal_reached()
-
+            self.current_goal_index += 1
+            self.get_logger().info(f"Goal {self.current_goal_index} reached")
+            self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
+            
         if self.current_goal_index >= len(self.path):
-            self.handle_final_goal_reached()
-            quit()
+            new_vel.linear.x = 0.0
+            new_vel.angular.z = 0.0
+            self.cmd_vel_pub.publish(new_vel)
+            self.get_logger().info(f"End of the goal list ({self.current_goal_index})")self.handle_final_goal_reached()
+            minimal_publisher.destroy_node() #quit()
 
         self.cmd_vel_pub.publish(new_vel)
 
-    def handle_goal_reached(self):
-        self.current_goal_index += 1
-        self.get_logger().info(f"Goal {self.current_goal_index} reached")
-        self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
-        
-    def handle_final_goal_reached(self):
-        new_vel = Twist()
-        new_vel.linear.x = 0.0
-        new_vel.angular.z = 0.0
-        self.cmd_vel_pub.publish(new_vel)
-        self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
 
 class RRTStarNode:
     def __init__(self, x, y):
@@ -193,6 +186,7 @@ def main(args=None):
 
     minimal_publisher = GoToGoal(trajectory)
     rclpy.spin(minimal_publisher)
+    print('HOLA')
     minimal_publisher.destroy_node()
     rclpy.shutdown()
 
