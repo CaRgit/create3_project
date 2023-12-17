@@ -191,7 +191,8 @@ def main(args=None):
             draw_marker_on_image(img_with_path, 'start', start)
             draw_marker_on_image(img_with_path, 'goal', goal)
             cv2.imshow("Map RRT*", img_with_path)
-            cv2.waitKey(0)
+            cv2.waitKey(1)
+            close
             cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
         
             #minimal_publisher = GoToGoal(trajectory)
@@ -205,6 +206,8 @@ def main(args=None):
                 rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
             minimal_publisher.destroy_node()
             rclpy.shutdown()
+
+            cv2.destroyAllWindows()
         elif choice== 'E':
             return
         else:
