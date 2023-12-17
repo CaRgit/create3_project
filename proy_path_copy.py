@@ -32,6 +32,7 @@ class GoToGoal(Node):
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
+        print(self.path)
         self.current_goal_index = 0
 
     def odom_callback(self, data):
@@ -64,7 +65,6 @@ class GoToGoal(Node):
 
         if self.current_goal_index > len(self.path):
             self.handle_final_goal_reached()
-            print(path)
             quit()
 
         self.cmd_vel_pub.publish(new_vel)
