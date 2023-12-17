@@ -40,11 +40,11 @@ class GoToGoal(Node):
         self.odom = data
 
     def go_to_goal(self):
-        current_time = time.time()
-        if self.initial_run and (current_time - self.start_time) < 1:
-            return
-        if self.initial_run:
-            self.initial_run = False
+        #current_time = time.time()
+        #if self.initial_run and (current_time - self.start_time) < 1:
+        #    return
+        #if self.initial_run:
+        #    self.initial_run = False
 
         goal = Odometry()
         goal.pose.pose.position.x, goal.pose.pose.position.y = self.path[self.current_goal_index]
