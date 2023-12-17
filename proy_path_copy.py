@@ -209,8 +209,11 @@ def main(args=None):
             cv2.destroyAllWindows()
         elif choice== 'E':
             return
-        elif (not first) and (choice!= 'E' and choice!= 'C'):
-            print('Invalid choice.')
+        else:
+            if first:
+                return
+            else:
+                print('Invalid choice.')
 
         if first:
             first = False
