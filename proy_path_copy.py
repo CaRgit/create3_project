@@ -167,8 +167,8 @@ def main(args=None):
     
 
     while end_program:            
-        if first or choice == 'C':
-            if choice == 'C':
+        if first or (choice == 'C'):
+            if (choice == 'C'):
                 rclpy.init(args=args)
                 
             initializer = GoToGoalInitializer()
@@ -207,7 +207,7 @@ def main(args=None):
             rclpy.shutdown()
 
             cv2.destroyAllWindows()
-        elif choice== 'E':
+        elif (choice== 'E'):
             return
         else:
             if first:
@@ -217,8 +217,8 @@ def main(args=None):
 
         if first:
             first = False
-        else:
-            choice = input("C --> Continue, E --> End: ")
+        
+        choice = input("C --> Continue, E --> End: ")
 
 if __name__ == '__main__':
     main()
