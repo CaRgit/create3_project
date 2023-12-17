@@ -196,6 +196,7 @@ def main(args=None):
         rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
+    print('Y fin')
 
 if __name__ == '__main__':
     main()
