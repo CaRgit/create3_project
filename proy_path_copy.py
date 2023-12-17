@@ -73,6 +73,7 @@ class GoToGoal(Node):
 
         if self.current_goal_index > len(self.path):
             self.handle_final_goal_reached()
+            return
 
         self.cmd_vel_pub.publish(new_vel)
 
