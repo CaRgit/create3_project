@@ -165,11 +165,7 @@ def main(args=None):
     end_program = True
     choice=[]
 
-    while end_program:
-        if first:
-            first = False
-        else:
-            choice = input("C --> Continue, E --> End")
+    while end_program:            
         if first or choice == 'C':
             initializer = GoToGoalInitializer()
             rclpy.spin_once(initializer)
@@ -208,7 +204,12 @@ def main(args=None):
         elif choice== 'E':
             return
         else:
-            print('Invalid choice')
+            print('Invalid choice.')
+
+        if first:
+            first = False
+        else:
+            choice = input("C --> Continue, E --> End: ")
 
 if __name__ == '__main__':
     main()
