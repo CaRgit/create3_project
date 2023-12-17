@@ -45,9 +45,7 @@ class GoToGoal(Node):
         for reading in msg.readings:
             intensity_value = reading.value
             self.ir.append(intensity_value)
-        media = np.mean([self.ir[2], self.ir[3], self.ir[4]])
-        print(media)
-    
+        media = np.mean([self.ir[2], self.ir[3], self.ir[4]])    
 
     def go_to_goal(self):
         goal = Odometry()
@@ -82,6 +80,11 @@ class GoToGoal(Node):
             self.cmd_vel_pub.publish(new_vel)
             self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
             self.end_of_goals = True
+
+        if self.media >= 400:
+            new_vel.linear.x = 0.0
+            new_vel.angular.z = 0.0
+            print('ESTORBAAAS')
 
         self.cmd_vel_pub.publish(new_vel)
 
