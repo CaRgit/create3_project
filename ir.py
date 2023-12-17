@@ -11,7 +11,7 @@ class IR(Node):
     def __init__(self):
         super().__init__("Infrared_Node")
         #self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, 10) #QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         #self.timer = self.create_timer(0.1, self.ir_callback)
         #self.ir_intensity = IrIntensityVector()
 
