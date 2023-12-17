@@ -163,13 +163,14 @@ def main(args=None):
     robot_radius = int(input("Enter robot radius (in cm): "))
     first = True
     end_program = True
+    choice=[]
 
     while end_program:
         if first:
             first = False
         else:
             choice = input("C --> Continue, E --> End")
-        if first or choice == C:
+        if first or choice == 'C':
             initializer = GoToGoalInitializer()
             rclpy.spin_once(initializer)
             initializer.destroy_node()
@@ -204,7 +205,7 @@ def main(args=None):
                 rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
             minimal_publisher.destroy_node()
             rclpy.shutdown()
-        elif choice==E:
+        elif choice== 'E':
             return
         else:
             print('Invalid choice')
