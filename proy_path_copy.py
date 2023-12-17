@@ -13,7 +13,7 @@ class GoToGoalInitializer(Node):
     def __init__(self):
         super().__init__("GoToGoalInitializerNode")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.initial_position_set = False
+        #self.initial_position_set = False
         self.start_time = time.time()
 
     def odom_callback(self, data):
@@ -164,7 +164,7 @@ def main(args=None):
     first = True
     end_program = True
 
-    while end_program
+    while end_program == True
         if first
             first = False
         else    
