@@ -162,6 +162,7 @@ def main(args=None):
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
     first = True
+    end = True
 
     while end
         if first
