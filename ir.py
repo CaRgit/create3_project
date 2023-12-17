@@ -15,7 +15,7 @@ class IR(Node):
     def ir_callback(self, msg):
         for reading in msg.readings:
             intensity_value = reading.value
-            self.get_logger().info(f'Intensidad: {intensity_value[0]}')
+            self.get_logger().info(f'Intensidad: {intensity_value}')
         
 def main(args=None):
     rclpy.init(args=args)
