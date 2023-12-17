@@ -29,7 +29,7 @@ class GoToGoal(Node):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.timer = self.create_timer(0.1, self.go_to_goal)
+        #self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
         self.current_goal_index = 0
