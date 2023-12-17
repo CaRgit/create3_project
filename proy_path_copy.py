@@ -45,7 +45,7 @@ class GoToGoal(Node):
         for reading in msg.readings:
             intensity_value = reading.value
             self.ir.append(intensity_value)
-        media = np.mean([self.ir[2], self.ir[3], self.ir[4]])    
+        self.media = np.mean([self.ir[2], self.ir[3], self.ir[4]])    
 
     def go_to_goal(self):
         goal = Odometry()
