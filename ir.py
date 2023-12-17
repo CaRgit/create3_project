@@ -20,7 +20,7 @@ class IR(Node):
 def main(args=None):
     rclpy.init(args=args)
     ir_node = IR()
-    rclpy.spin(ir_node)
+    rclpy.spin_once(ir_node)
     ir_node.destroy_node()
     rclpy.shutdown()
 
