@@ -83,7 +83,7 @@ class GoToGoal(Node):
             self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
             self.end_of_goals = True
 
-        if any(lectura > 800 for lectura in self.ir): #self.media >= 250:
+        if any(lectura > 500 for lectura in self.ir): #self.media >= 250:
             new_vel.linear.x = 0.0
             new_vel.angular.z = 0.0
             print('ESTORBAAAS')
