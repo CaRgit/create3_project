@@ -33,6 +33,7 @@ class GoToGoal(Node):
         self.odom = Odometry()
         self.path = points
         self.current_goal_index = 0
+        self.end_of_goals = False
 
     def odom_callback(self, data):
         self.odom = data
@@ -69,7 +70,7 @@ class GoToGoal(Node):
             new_vel.angular.z = 0.0
             self.cmd_vel_pub.publish(new_vel)
             self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
-            minimal_publisher.destroy_node() #quit()
+            self.end_of_goals = True
 
         self.cmd_vel_pub.publish(new_vel)
 
@@ -184,9 +185,15 @@ def main(args=None):
     cv2.waitKey(0)
     cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
+    #minimal_publisher = GoToGoal(trajectory)
+    #rclpy.spin(minimal_publisher)
+    #print('HOLA')
+    #minimal_publisher.destroy_node()
+    #rclpy.shutdown()
+
     minimal_publisher = GoToGoal(trajectory)
-    rclpy.spin(minimal_publisher)
-    print('HOLA')
+    while rclpy.ok() and not minimal_publisher.end_of_goals:
+        rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
     minimal_publisher.destroy_node()
     rclpy.shutdown()
 
