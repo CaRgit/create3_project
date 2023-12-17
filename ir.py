@@ -10,19 +10,12 @@ import math
 class IR(Node):
     def __init__(self):
         super().__init__("Infrared_Node")
-        #self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        #self.timer = self.create_timer(0.1, self.ir_callback)
-        #self.ir_intensity = IrIntensityVector()
 
     def ir_callback(self, msg):
         for reading in msg.readings:
             intensity_value = reading.value
-            self.get_logger().info(f'Intensidad: {intensity_value}')
-
-    #def check_hazard(self):
-        #print(self.ir_intensity[0].value)
-        #print("funciona")
+            self.get_logger().info(f'Intensidad: {intensity_value[0]}')
         
 def main(args=None):
     rclpy.init(args=args)
