@@ -68,7 +68,7 @@ class GoToGoal(Node):
             new_vel.linear.x = 0.0
             new_vel.angular.z = 0.0
             self.cmd_vel_pub.publish(new_vel)
-            self.get_logger().info(f"End of the goal list ({self.current_goal_index})")self.handle_final_goal_reached()
+            self.get_logger().info(f"End of the goal list ({self.current_goal_index})")
             minimal_publisher.destroy_node() #quit()
 
         self.cmd_vel_pub.publish(new_vel)
