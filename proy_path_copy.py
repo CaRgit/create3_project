@@ -181,6 +181,7 @@ def main(args=None):
     max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
+    robot_radius = robot_radius + 5
     
 
     while end_program:            
