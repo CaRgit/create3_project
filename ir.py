@@ -16,7 +16,7 @@ class IR(Node):
         self.ir_intensity = IrIntensityVector()
 
     def ir_callback(self, data):
-        for reading in data.readings
+        for reading in data.readings:
             intensity_value = reading.value
             self.get_logger().info(f'Intensidad: {intensity_value}')
 
