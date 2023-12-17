@@ -63,7 +63,7 @@ class GoToGoal(Node):
         else:
             self.handle_goal_reached()
 
-        if self.current_goal_index > len(self.path):
+        if self.current_goal_index >= len(self.path):
             self.handle_final_goal_reached()
             quit()
 
