@@ -29,7 +29,7 @@ class GoToGoal(Node):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        #self.timer = self.create_timer(0.1, self.go_to_goal)
+        self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
         self.current_goal_index = 0
@@ -161,42 +161,52 @@ def main(args=None):
     max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
+    first = True
 
-    initializer = GoToGoalInitializer()
-    rclpy.spin_once(initializer)
-    initializer.destroy_node()
-    start = (int(initializer.initial_position[0] * 100), int(initializer.initial_position[1] * 100))
-
-    img_with_path = np.copy(img)
-    draw_marker_on_image(img_with_path, 'start', start)
-    cv2.imshow("Map RRT*", img_with_path)
-
-    goal = []
-    cv2.setMouseCallback("Map RRT*", mouse_callback, [img_with_path, goal])
-    while len(goal) < 1:
-        cv2.waitKey(1)
-    goal = goal[0]
-
-    img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
-
-    draw_marker_on_image(img_with_path, 'start', start)
-    draw_marker_on_image(img_with_path, 'goal', goal)
-    cv2.imshow("Map RRT*", img_with_path)
-    cv2.waitKey(0)
-    cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
-
-    #minimal_publisher = GoToGoal(trajectory)
-    #rclpy.spin(minimal_publisher)
-    #print('HOLA')
-    #minimal_publisher.destroy_node()
-    #rclpy.shutdown()
-
-    minimal_publisher = GoToGoal(trajectory)
-    while rclpy.ok() and not minimal_publisher.end_of_goals:
-        rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
-    minimal_publisher.destroy_node()
-    rclpy.shutdown()
-    print('Y fin')
+    while end
+        if first
+            first = False
+        else    
+            choice = input("C --> Continue, E --> End")
+        if first or choice == C
+            initializer = GoToGoalInitializer()
+            rclpy.spin_once(initializer)
+            initializer.destroy_node()
+            start = (int(initializer.initial_position[0] * 100), int(initializer.initial_position[1] * 100))
+        
+            img_with_path = np.copy(img)
+            draw_marker_on_image(img_with_path, 'start', start)
+            cv2.imshow("Map RRT*", img_with_path)
+        
+            goal = []
+            cv2.setMouseCallback("Map RRT*", mouse_callback, [img_with_path, goal])
+            while len(goal) < 1:
+                cv2.waitKey(1)
+            goal = goal[0]
+        
+            img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
+        
+            draw_marker_on_image(img_with_path, 'start', start)
+            draw_marker_on_image(img_with_path, 'goal', goal)
+            cv2.imshow("Map RRT*", img_with_path)
+            cv2.waitKey(0)
+            cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+        
+            #minimal_publisher = GoToGoal(trajectory)
+            #rclpy.spin(minimal_publisher)
+            #print('HOLA')
+            #minimal_publisher.destroy_node()
+            #rclpy.shutdown()
+        
+            minimal_publisher = GoToGoal(trajectory)
+            while rclpy.ok() and not minimal_publisher.end_of_goals:
+                rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
+            minimal_publisher.destroy_node()
+            rclpy.shutdown()
+        elif choice==E
+            return
+        else
+            print('Invalid choice')
 
 if __name__ == '__main__':
     main()
