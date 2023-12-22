@@ -179,7 +179,7 @@ def main():
 
     start, goal = click_coordinates[0], click_coordinates[1]
 
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot, optimization_iterations=100)
+    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot, optimization_iterations=10000)
 
     for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),
