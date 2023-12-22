@@ -41,6 +41,7 @@ class GoToGoal(Node):
         self.current_goal_index = 0
         self.end_of_goals = False
 
+        self.cp = ColorPalette()
         self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = False
@@ -60,7 +61,6 @@ class GoToGoal(Node):
         goal.pose.pose.position.y, goal.pose.pose.position.x = self.path[self.current_goal_index]
         new_vel = Twist()
 
-        cp = ColorPalette()
         lightring = self.last_lightring
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
@@ -99,13 +99,13 @@ class GoToGoal(Node):
 
             lightring = LightringLeds()
             lightring.override_system = True
-            lightring.leds = Lights([cp.red, cp.red, cp.red, cp.red, cp.red, cp.red])
+            lightring.leds = [cp.red, cp.red, cp.red, cp.red, cp.red, cp.red]
             self.last_lightring = lightring
             
         elif(self.last_lightring.override_system == True):
             lightring = LightringLeds()
             lightring.override_system = True
-            lightring.leds = Lights([cp.white, cp.white, cp.white, cp.white, cp.white, cp.white])
+            lightring.leds = [cp.white, cp.white, cp.white, cp.white, cp.white, cp.white]
             self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
