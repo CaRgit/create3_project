@@ -102,7 +102,7 @@ class GoToGoal(Node):
             lightring.leds = [LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0)]
             self.last_lightring = lightring
             
-        else if self.last_lightring.override_system == True:
+        elif(self.last_lightring.override_system == True):
             lightring = LightringLeds()
             lightring.override_system = True
             lightring.leds = [LedColor(red=0,green=0,blue=0), LedColor(red=0,green=0,blue=0), LedColor(red=0,green=0,blue=0), LedColor(red=0,green=0,blue=0), LedColor(red=0,green=0,blue=0), LedColor(red=0,green=0,blue=0)]
