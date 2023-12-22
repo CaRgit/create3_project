@@ -45,7 +45,7 @@ class GoToGoal(Node):
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = False
 
-        
+        cp = ColorPalette()
         lightring = LightringLeds()
         lightring.override_system = True
         lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
