@@ -192,7 +192,7 @@ def main(args=None):
             initializer = GoToGoalInitializer()
             rclpy.spin_once(initializer)
             initializer.destroy_node()
-            start = (int(initializer.initial_position[0] * 100), int(initializer.initial_position[1] * 100))
+            start = (int(initializer.initial_position[1] * 100), int(initializer.initial_position[0] * 100))
         
             img_with_path = np.copy(img)
             draw_marker_on_image(img_with_path, 'start', start)
