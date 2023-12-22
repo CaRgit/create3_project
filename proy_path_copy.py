@@ -51,7 +51,8 @@ class GoToGoal(Node):
 
     def go_to_goal(self):
         goal = Odometry()
-        goal.pose.pose.position.y, goal.pose.pose.position.x = self.path[self.current_goal_index]
+        goal.pose.pose.position.x, goal.pose.pose.position.y = self.path[self.current_goal_index]
+        goal.pose.pose.position.y = - goal.pose.pose.position.y
         new_vel = Twist()
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
