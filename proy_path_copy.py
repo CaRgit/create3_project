@@ -66,11 +66,11 @@ class GoToGoal(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang, kp_lin = 10, 5
+        kp_ang, kp_lin = 15, 5
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
-            new_vel.linear.x = (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
+            new_vel.linear.x = (1 - abs(angle_error) / math.pi) * kp_lin * distance_to_goal
         else:
             self.current_goal_index += 1
             self.get_logger().info(f"Goal {self.current_goal_index} reached")
