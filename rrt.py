@@ -14,7 +14,7 @@ def is_valid_point(img, x, y, radio_robot):
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
 def nearest_node(nodes, x, y):
-    distances = [(node.x - x)**2 + (node.y - y)**2 for node in nodes]
+    distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
     return nodes[np.argmin(distances)]
 
 def new_point(x_rand, y_rand, x_near, y_near, step_size):
