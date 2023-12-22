@@ -52,12 +52,11 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
         if random.uniform(0, 1) < 0.5:  # Ajusta el umbral según tus necesidades
             x_rand, y_rand = goal
         else:
-        # Genera puntos cercanos al objetivo con una probabilidad más alta
-        if random.uniform(0, 1) < 0.8:
-            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
-            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
-        else:
-            x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+            if random.uniform(0, 1) < 0.8: # Genera puntos cercanos al objetivo con una probabilidad más alta
+                x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
+                y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
+            else:
+                x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
             
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
