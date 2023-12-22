@@ -120,8 +120,24 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                         cv2.waitKey(1)
 
         # Save the best path found in this iteration
-        if best_nodes is None or nodes[-1].cost < best_nodes[-1].cost:
+        if best_nodes is None or nodes[-1].cost < best_nodes[-1].cost and goal_reached):
             best_nodes = nodes.copy()
+
+        # Check if a valid path was found
+    if best_nodes is not None:
+        # Draw the best path found so far
+        current_node = best_nodes[-1]
+        while current_node.parent is not None:
+            cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+            current_node = current_node.parent
+
+        # Draw all nodes for the best path found so far
+        for node in best_nodes:
+            if node.parent is not None:
+                cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+
+        cv2.imshow("Mapa con RRT*", img_with_path)
+        cv2.waitKey(1)
 
     return img_with_path, best_nodes, start, goal
 
