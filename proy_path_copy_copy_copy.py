@@ -12,8 +12,8 @@ import time
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
-from irobot_create_msg.msg import AudioNoteVector
-from irobot_create_msg.msg import AudioNoteSequence
+from irobot_create_msgs.msg import AudioNoteVector
+from irobot_create_msgs.msg import AudioNoteSequence
 
 class GoToGoalInitializer(Node):
     def __init__(self):
