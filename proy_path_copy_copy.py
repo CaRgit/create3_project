@@ -99,7 +99,7 @@ class GoToGoal(Node):
 
             lightring = LightringLeds()
             lightring.override_system = True
-            lightring.leds = Lights([cp.red, cp.red, cp.red, cp.green, cp.green, cp.green])
+            lightring.leds = [LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0), LedColor(red=255,green=0,blue=0)
             self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
