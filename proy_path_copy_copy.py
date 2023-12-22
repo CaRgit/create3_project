@@ -111,7 +111,6 @@ class GoToGoal(Node):
             elif(self.last_lightring.override_system == True):
                 lightring = LightringLeds()
                 lightring.override_system = True
-                lightring.leds = [cp.default, cp.default, cp.default, cp.default, cp.default, cp.default]
                 self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
