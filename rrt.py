@@ -42,7 +42,7 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio_robot):
+def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio_robot, optimization_iterations):
     nodes = [Node(*start)]
     img_with_path = np.copy(img)
     goal_reached = False
