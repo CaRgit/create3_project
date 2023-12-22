@@ -45,6 +45,13 @@ class GoToGoal(Node):
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = False
 
+        
+        lightring = LightringLeds()
+        lightring.override_system = True
+        lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
+        self.lights_publisher.publish(lightring)
+        
+
     def odom_callback(self, data):
         self.odom = data
 
@@ -111,7 +118,7 @@ class GoToGoal(Node):
             elif(self.last_lightring.override_system == True):
                 lightring = LightringLeds()
                 lightring.override_system = True
-                lightring.leds = [cp.default, cp.default, cp.default, cp.default, cp.default, cp.default]
+                lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
                 self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
