@@ -61,8 +61,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                 node_new.parent = min_cost_node
                 node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x)**2 + (node_new.y - min_cost_node.y)**2)
 
-                cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1) #prueba
-
                 for near_node in near_nodes:
                     new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
                     if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, radio_robot):
@@ -84,10 +82,18 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
                         current_node = current_node.parent
-
-                    for node in nodes:
-                        if node.parent is not None:
-                            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+                    # Agrega este bucle para dibujar círculos en la posición de cada nodo
+            for node in nodes:
+                if node.parent is not None:
+                    # Si el nodo es parte de la trayectoria, dibuja un círculo más grande
+                    if node == goal_node or node.parent == goal_node:
+                        cv2.circle(img_with_path, (node.x, node.y), 5, (0, 255, 0), -1)
+                    else:
+                        cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+                    
+                    #for node in nodes:
+                        #if node.parent is not None:
+                            #cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
                     return img_with_path, nodes, start, goal
 
