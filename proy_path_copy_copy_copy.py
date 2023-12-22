@@ -49,9 +49,18 @@ class GoToGoal(Node):
         self.last_lightring.override_system = False
 
                 
-        self.sound_publisher = self.create_publisher(AudioNoteVector, 'cmd_audio', 10)
-        self.Musica = AudioNote[] 
-        self.Musica.append(500,3)
+        self.sound_publisher = self.create_publisher(AudioNoteVector[], 'cmd_audio', 10)
+        self.Musica = AudioNoteVector[] 
+        self.Musica.append(523,3)
+        #self.Musica.append(523,0.2)
+        #self.Musica.append(523,0.2)
+        #self.Musica.append(523,0.2)
+        #self.Musica.append(523,0.5)
+        #self.Musica.append(415,0.5)
+        #self.Musica.append(466,0.5)
+        #self.Musica.append(523,0.3)
+        #self.Musica.append(466,0.2)
+        #self.Musica.append(523,1)
 
 
     def odom_callback(self, data):
