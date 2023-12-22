@@ -78,16 +78,20 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                     goal_reached = True
 
                 if goal_reached:
-                    current_node = goal_node
-                    while current_node.parent is not None:
-                        cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        current_node = current_node.parent
+            # Optimize the path
+            optimize_path(img, nodes, goal, radio_robot, optimization_iterations)
 
-                    for node in nodes:
-                        if node.parent is not None:
-                            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+            # Draw the optimized path
+            current_node = nodes[-1]
+            while current_node.parent is not None:
+                cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+                current_node = current_node.parent
 
-                    return img_with_path, nodes, start, goal
+            for node in nodes:
+                if node.parent is not None:
+                    cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+
+            return img_with_path, nodes, start, goal
 
     return img_with_path, nodes, start, goal
 
@@ -107,6 +111,19 @@ def draw_markers_on_image(img, start, goal):
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     
     return img_with_markers
+
+def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
+    goal_node = nodes[-1]
+    for _ in range(optimization_iterations):
+        current_node = goal_node
+        while current_node.parent is not None:
+            # Try to find a shorter path
+            new_cost = current_node.parent.cost + math.sqrt((current_node.x - current_node.parent.x)**2 + (current_node.y - current_node.parent.y)**2)
+            if not has_collision(img, current_node.x, current_node.y, current_node.parent.x, current_node.parent.y, radio_robot):
+                current_node.parent.cost = new_cost
+                current_node = current_node.parent
+            else:
+                break
 
 def main():
     img_path = f'./{"mapa.png"}'
@@ -129,7 +146,7 @@ def main():
 
     start, goal = click_coordinates[0], click_coordinates[1]
 
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot)
+    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot, optimization_iterations=10000)
 
     for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),
