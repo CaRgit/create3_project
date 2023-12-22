@@ -50,7 +50,7 @@ class GoToGoal(Node):
 
                 
         self.sound_publisher = self.create_publisher(AudioNoteVector, 'cmd_audio', 10)
-        self.Musica = AudioNoteVector[] 
+        self.Musica = AudioNote[] 
         self.Musica.append(500,3)
 
 
