@@ -130,7 +130,7 @@ def is_valid_point(img, x, y, robot_radius):
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
 def nearest_node(nodes, x, y):
-    distances = [(node.x - x) ** 2 + (node.y - y) ** 2 for node in nodes]
+    distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
     return nodes[np.argmin(distances)]
 
 def new_point(x_rand, y_rand, x_near, y_near, step_size):
@@ -146,7 +146,16 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
     goal_node = None
 
     for _ in range(max_iter):
-        x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+        if random.uniform(0, 1) < 0.2:  # Ajusta el umbral según tus necesidades
+            x_rand, y_rand = goal
+        else:
+            if random.uniform(0, 1) < 0.8: # Genera puntos cercanos al objetivo con una probabilidad más alta
+                x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
+                y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
+            else:
+                x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+
+        
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
