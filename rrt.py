@@ -120,7 +120,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                         cv2.waitKey(1)
 
         # Save the best path found in this iteration
-        if best_nodes is None or nodes[-1].cost < best_nodes[-1].cost and goal_reached):
+        if best_nodes is None or (nodes[-1].cost < best_nodes[-1].cost and goal_reached):
             best_nodes = nodes.copy()
 
         # Check if a valid path was found
