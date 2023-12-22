@@ -25,75 +25,88 @@ def has_collision(img, x1, y1, x2, y2, radio_robot):
     points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
     return any(not is_valid_point(img, int(x), int(y), radio_robot) for x, y in points)
 
-def mouse_callback(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONUP:
-        click_coordinates, img_with_markers = param
-        marker_type = cv2.MARKER_CROSS
-        marker_size, thickness = 10, 2
-
-        if not click_coordinates:
-            start = (x, y)
-            click_coordinates.append(start)
-        else:
-            goal = (x, y)
-            click_coordinates.append(goal)
-
-        for point, label in zip(click_coordinates, ['ini', 'fin']):
-            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
-            cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
+    goal_node = nodes[-1]
+    for _ in range(optimization_iterations):
+        current_node = goal_node
+        while current_node.parent is not None:
+            # Try to find a shorter path
+            new_cost = current_node.parent.cost + math.sqrt((current_node.x - current_node.parent.x)**2 + (current_node.y - current_node.parent.y)**2)
+            if not has_collision(img, current_node.x, current_node.y, current_node.parent.x, current_node.parent.y, radio_robot):
+                current_node.parent.cost = new_cost
+                current_node = current_node.parent
+            else:
+                break
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio_robot, optimization_iterations):
-    nodes = [Node(*start)]
-    img_with_path = np.copy(img)
-    goal_reached = False
+    best_path_cost = float('inf')
+    best_nodes = None
 
     for _ in range(max_iter):
-        x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
-        nearest = nearest_node(nodes, x_rand, y_rand)
-        x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
+        nodes = [Node(*start)]
+        img_with_path = np.copy(img)
+        goal_reached = False
 
-        if is_valid_point(img, int(x_new), int(y_new), radio_robot):
-            node_new = Node(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
-            min_cost_node = nearest_node(near_nodes, x_new, y_new)
+        for _ in range(max_iter):
+            x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+            nearest = nearest_node(nodes, x_rand, y_rand)
+            x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
-            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, radio_robot):
-                node_new.parent = min_cost_node
-                node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x)**2 + (node_new.y - min_cost_node.y)**2)
+            if is_valid_point(img, int(x_new), int(y_new), radio_robot):
+                node_new = Node(int(x_new), int(y_new))
+                near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
+                min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
-                for near_node in near_nodes:
-                    new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
-                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, radio_robot):
-                        near_node.parent, near_node.cost = node_new, new_cost
+                if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, radio_robot):
+                    node_new.parent = min_cost_node
+                    node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x)**2 + (node_new.y - min_cost_node.y)**2)
 
-                nodes.append(node_new)
-                cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
+                    for near_node in near_nodes:
+                        new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
+                        if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, radio_robot):
+                            near_node.parent, near_node.cost = node_new, new_cost
 
-                if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], radio_robot):
-                    goal_node = Node(*goal)
-                    goal_node.parent = node_new
-                    goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
-                    nodes.append(goal_node)
-                    cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
-                    goal_reached = True
+                    nodes.append(node_new)
+                    cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
-                if goal_reached:
-                    # Optimize the path
-                    optimize_path(img, nodes, goal, radio_robot, optimization_iterations)
+                    if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], radio_robot):
+                        goal_node = Node(*goal)
+                        goal_node.parent = node_new
+                        goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
+                        nodes.append(goal_node)
+                        cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
+                        goal_reached = True
 
-                    # Draw the optimized path
-                    current_node = nodes[-1]
-                    while current_node.parent is not None:
-                        cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        current_node = current_node.parent
-        
-                    for node in nodes:
-                        if node.parent is not None:
-                            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
-        
-                    return img_with_path, nodes, start, goal
+                    if goal_reached:
+                        current_node = goal_node
+                        while current_node.parent is not None:
+                            cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+                            current_node = current_node.parent
 
-    return img_with_path, nodes, start, goal
+                        for node in nodes:
+                            if node.parent is not None:
+                                cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+
+                        # Draw the best path found so far
+                        if best_nodes is not None:
+                            current_node = best_nodes[-1]
+                            while current_node.parent is not None:
+                                cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+                                current_node = current_node.parent
+
+                        # Draw all nodes for the best path found so far
+                        for node in best_nodes:
+                            if node.parent is not None:
+                                cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+
+                        cv2.imshow("Mapa con RRT*", img_with_path)
+                        cv2.waitKey(1)
+
+        # Save the best path found in this iteration
+        if best_nodes is None or nodes[-1].cost < best_nodes[-1].cost:
+            best_nodes = nodes.copy()
+
+    return img_with_path, best_nodes, start, goal
 
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
@@ -111,19 +124,6 @@ def draw_markers_on_image(img, start, goal):
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     
     return img_with_markers
-    
-def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
-    goal_node = nodes[-1]
-    for _ in range(optimization_iterations):
-        current_node = goal_node
-        while current_node.parent is not None:
-            # Try to find a shorter path
-            new_cost = current_node.parent.cost + math.sqrt((current_node.x - current_node.parent.x)**2 + (current_node.y - current_node.parent.y)**2)
-            if not has_collision(img, current_node.x, current_node.y, current_node.parent.x, current_node.parent.y, radio_robot):
-                current_node.parent.cost = new_cost
-                current_node = current_node.parent
-            else:
-                break
 
 def main():
     img_path = f'./{"mapa.png"}'
