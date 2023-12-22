@@ -25,6 +25,23 @@ def has_collision(img, x1, y1, x2, y2, radio_robot):
     points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
     return any(not is_valid_point(img, int(x), int(y), radio_robot) for x, y in points)
 
+def mouse_callback(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONUP:
+        click_coordinates, img_with_markers = param
+        marker_type = cv2.MARKER_CROSS
+        marker_size, thickness = 10, 2
+
+        if not click_coordinates:
+            start = (x, y)
+            click_coordinates.append(start)
+        else:
+            goal = (x, y)
+            click_coordinates.append(goal)
+
+        for point, label in zip(click_coordinates, ['ini', 'fin']):
+            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
+            cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
 def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
     goal_node = nodes[-1]
     for _ in range(optimization_iterations):
