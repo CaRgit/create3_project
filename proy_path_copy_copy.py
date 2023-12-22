@@ -65,7 +65,6 @@ class GoToGoal(Node):
         self.current_goal_index = 0
         self.end_of_goals = False
 
-        self.cp = ColorPalette()
         self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = False
@@ -86,6 +85,7 @@ class GoToGoal(Node):
         new_vel = Twist()
 
         lightring = self.last_lightring
+        cp = ColorPalette()
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
         angle_to_goal = math.atan2(goal.pose.pose.position.y - self.odom.pose.pose.position.y, goal.pose.pose.position.x - self.odom.pose.pose.position.x)
