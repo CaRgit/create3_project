@@ -9,6 +9,8 @@ import cv2
 import numpy as np
 import random
 import time
+from irobot_create_msgs.msg import LedColor
+from irobot_create_msgs.msg import LightringLeds
 
 class GoToGoalInitializer(Node):
     def __init__(self):
@@ -39,6 +41,10 @@ class GoToGoal(Node):
         self.current_goal_index = 0
         self.end_of_goals = False
 
+        self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
+        self.last_lightring = LightringLeds()
+        self.last_lightring.override_system = False
+
     def odom_callback(self, data):
         self.odom = data
 
@@ -53,6 +59,9 @@ class GoToGoal(Node):
         goal = Odometry()
         goal.pose.pose.position.y, goal.pose.pose.position.x = self.path[self.current_goal_index]
         new_vel = Twist()
+
+        cp = ColorPalette()
+        lightring = self.last_lightring
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
         angle_to_goal = math.atan2(goal.pose.pose.position.y - self.odom.pose.pose.position.y, goal.pose.pose.position.x - self.odom.pose.pose.position.x)
@@ -88,7 +97,14 @@ class GoToGoal(Node):
             new_vel.angular.z = 0.0
             print('ESTORBAAAS')
 
+            lightring = LightringLeds()
+            lightring.override_system = True
+            lightring.leds = Lights([cp.red, cp.red, cp.red, cp.green, cp.green, cp.green])
+            self.last_lightring = lightring
+
         self.cmd_vel_pub.publish(new_vel)
+
+        self.lights_publisher.publish(lightring)
 
 
 class RRTStarNode:
@@ -238,6 +254,30 @@ def main(args=None):
             first = False
         
         choice = input("C --> Continue, E --> End: ")
+
+class ColorPalette():
+    """ Helper Class to define frequently used colors"""
+    def __init__(self):
+        self.red = LedColor(red=255,green=0,blue=0)
+        self.green = LedColor(red=0,green=255,blue=0)
+        self.blue = LedColor(red=0,green=0,blue=255)
+        self.yellow = LedColor(red=255,green=255,blue=0)
+        self.pink = LedColor(red=255,green=0,blue=255)
+        self.cyan = LedColor(red=0,green=255,blue=255)
+        self.purple = LedColor(red=127,green=0,blue=255)
+        self.white = LedColor(red=255,green=255,blue=255)
+        self.grey = LedColor(red=189,green=189,blue=189)
+
+class Lights():
+    """ Class to tell the robot to set lightring lights as part of dance sequence"""
+    def __init__(self, led_colors):
+        """
+        Parameters
+        ----------
+        led_colors : list of LedColor
+            The list of 6 LedColors corresponding to the 6 LED lights on the lightring
+        """
+        self.led_colors = led_colors
 
 if __name__ == '__main__':
     main()
