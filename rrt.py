@@ -111,7 +111,7 @@ def draw_markers_on_image(img, start, goal):
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     
     return img_with_markers
-
+    
 def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
     goal_node = nodes[-1]
     for _ in range(optimization_iterations):
