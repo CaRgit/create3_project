@@ -49,7 +49,7 @@ class GoToGoal(Node):
         self.last_lightring.override_system = False
 
                 
-        self.sound_publisher = self.create_publisher(AudioNoteVector[], 'cmd_audio', 10)
+        self.sound_publisher = self.create_publisher(AudioNoteVector, '/cmd_audio', 10)
         self.Musica = AudioNoteVector[] 
         self.Musica.append(523,3)
         #self.Musica.append(523,0.2)
