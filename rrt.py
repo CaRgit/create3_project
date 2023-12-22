@@ -49,7 +49,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
 
     for _ in range(max_iter):
         
-        if random.uniform(0, 1) < 0.5:  # Ajusta el umbral según tus necesidades
+        if random.uniform(0, 1) < 0.2:  # Ajusta el umbral según tus necesidades
             x_rand, y_rand = goal
         else:
             if random.uniform(0, 1) < 0.8: # Genera puntos cercanos al objetivo con una probabilidad más alta
