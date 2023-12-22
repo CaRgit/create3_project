@@ -42,7 +42,7 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=100):
+def optimize_path(img, nodes, goal, radio_robot, optimization_iterations=1000):
     goal_node = nodes[-1]
     for _ in range(optimization_iterations):
         current_node = goal_node
