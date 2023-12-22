@@ -51,12 +51,8 @@ class GoToGoal(Node):
 
     def go_to_goal(self):
         goal = Odometry()
-        goal.pose.pose.position.x, goal.pose.pose.position.y = self.path[self.current_goal_index]
+        goal.pose.pose.position.y, goal.pose.pose.position.x = self.path[self.current_goal_index]
         new_vel = Twist()
-
-        #SIGNOS
-        self.odom.pose.pose.position.y = - self.odom.pose.pose.position.y
-        #SIGNOS
 
         distance_to_goal = math.hypot(goal.pose.pose.position.x - self.odom.pose.pose.position.x, goal.pose.pose.position.y - self.odom.pose.pose.position.y)
         angle_to_goal = math.atan2(goal.pose.pose.position.y - self.odom.pose.pose.position.y, goal.pose.pose.position.x - self.odom.pose.pose.position.x)
@@ -215,7 +211,8 @@ def main(args=None):
             cv2.imshow("Map RRT*", img_with_path)
             cv2.waitKey(1)
             cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
-        
+
+            
             #minimal_publisher = GoToGoal(trajectory)
             #rclpy.spin(minimal_publisher)
             #print('HOLA')
