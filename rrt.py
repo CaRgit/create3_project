@@ -61,6 +61,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
                 node_new.parent = min_cost_node
                 node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x)**2 + (node_new.y - min_cost_node.y)**2)
 
+                cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1) #prueba
+
                 for near_node in near_nodes:
                     new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
                     if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, radio_robot):
@@ -132,8 +134,7 @@ def main():
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot)
 
     for point in [start, goal]:
-        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),
-                       markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
 
     cv2.destroyAllWindows()
 
