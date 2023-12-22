@@ -111,6 +111,7 @@ class GoToGoal(Node):
             elif(self.last_lightring.override_system == True):
                 lightring = LightringLeds()
                 lightring.override_system = True
+                lightring.leds = [cp.default, cp.default, cp.default, cp.default, cp.default, cp.default]
                 self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
@@ -278,7 +279,7 @@ class ColorPalette():
         self.purple = LedColor(red=127,green=0,blue=255)
         self.white = LedColor(red=255,green=255,blue=255)
         self.grey = LedColor(red=189,green=189,blue=189)
-        self.default = LedColor(red=10,green=10,blue=10)
+        self.default = LedColor(red=1,green=1,blue=1)
 
 class Lights():
     """ Class to tell the robot to set lightring lights as part of dance sequence"""
