@@ -43,14 +43,7 @@ class GoToGoal(Node):
 
         self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
         self.last_lightring = LightringLeds()
-        self.last_lightring.override_system = False
-
-        cp = ColorPalette()
-        lightring = LightringLeds()
-        lightring.override_system = True
-        lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
-        self.lights_publisher.publish(lightring)
-        
+        self.last_lightring.override_system = True        
 
     def odom_callback(self, data):
         self.odom = data
