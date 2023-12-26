@@ -81,7 +81,7 @@ class GoToGoal(Node):
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
-        elif abs(distance_to_goal) < step_size/4: 
+        elif abs(distance_to_goal) < self.step_size/4: 
             self.current_goal_index += 1
             self.get_logger().info(f"Looking for goal {self.current_goal_index}")
             self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
