@@ -81,7 +81,7 @@ class GoToGoal(Node):
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
-        elif abs(distance_to_goal) < self.step_size/2: 
+        elif abs(distance_to_goal) < self.step_size: 
             self.current_goal_index += 1
             self.get_logger().info(f"Looking for goal {self.current_goal_index}")
             self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
@@ -130,8 +130,8 @@ class RRTStarNode:
         self.parent = None
         self.cost = 0.0
 
-def is_valid_point(img, x, y, robot_radius):
-    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), robot_radius, 255, thickness=1)
+def is_valid_point(img, x, y, robot_diameter):
+    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), robot_diameter, 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
 def nearest_node(nodes, x, y):
@@ -142,11 +142,11 @@ def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
-def has_collision(img, x1, y1, x2, y2, robot_radius):
+def has_collision(img, x1, y1, x2, y2, robot_diameter):
     points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
-    return any(not is_valid_point(img, int(x), int(y), robot_radius) for x, y in points)
+    return any(not is_valid_point(img, int(x), int(y), robot_diameter) for x, y in points)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_radius):
+def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_diameter):
     nodes, img_with_path, points = [RRTStarNode(*start)], np.copy(img), []
     goal_node = None
 
@@ -164,24 +164,24 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
-        if is_valid_point(img, int(x_new), int(y_new), robot_radius):
+        if is_valid_point(img, int(x_new), int(y_new), robot_diameter):
             node_new = RRTStarNode(int(x_new), int(y_new))
             near_nodes = [node for node in nodes if math.hypot(node.x - node_new.x, node.y - node_new.y) < rewiring_radius_cm]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
-            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, robot_radius):
+            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, robot_diameter):
                 node_new.parent = min_cost_node
                 node_new.cost = min_cost_node.cost + math.hypot(node_new.x - min_cost_node.x, node_new.y - min_cost_node.y)
 
                 for near_node in near_nodes:
                     new_cost = node_new.cost + math.hypot(node_new.x - near_node.x, node_new.y - near_node.y)
-                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, robot_radius):
+                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, robot_diameter):
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
                 cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
-                if not points and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], robot_radius):
+                if not points and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], robot_diameter):
                     goal_node = RRTStarNode(*goal)
                     goal_node.parent = node_new
                     goal_node.cost = node_new.cost + math.hypot(goal_node.x - node_new.x, goal_node.y - node_new.y)
@@ -222,7 +222,7 @@ def main(args=None):
     step_size_cm = float(input("Enter step size (in cm): "))
     max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
-    robot_radius = int(input("Enter robot radius (in cm): "))
+    robot_diameter = int(input("Enter robot diameter (in cm): "))
 
     while end_program:            
         if first or (choice == 'C'):
@@ -244,7 +244,7 @@ def main(args=None):
                 cv2.waitKey(1)
             goal = goal[0]
         
-            img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_radius)
+            img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_diameter)
         
             draw_marker_on_image(img_with_path, 'start', start)
             draw_marker_on_image(img_with_path, 'goal', goal)
