@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from irobot_create_msgs.msg import LedColor
+from irobot_create_msgs.msg import LightringLeds
 from irobot_create_msgs.msg import IrIntensityVector
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import math
@@ -9,8 +11,6 @@ import cv2
 import numpy as np
 import random
 import time
-from irobot_create_msgs.msg import LedColor
-from irobot_create_msgs.msg import LightringLeds
 
 class GoToGoalInitializer(Node):
     def __init__(self):
@@ -28,7 +28,7 @@ class GoToGoalInitializer(Node):
         self.get_logger().info(f"Initial position set: {self.initial_position}")
 
 class GoToGoal(Node):
-    def __init__(self, points):
+    def __init__(self, points, step_size_cm):
         super().__init__("GoToGoalNode")
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
@@ -36,6 +36,7 @@ class GoToGoal(Node):
         self.timer = self.create_timer(0.1, self.go_to_goal)
         self.odom = Odometry()
         self.path = points
+        self.step_size = step_size_cm
         self.media = 0
         self.ir=[]
         self.current_goal_index = 0
@@ -80,6 +81,10 @@ class GoToGoal(Node):
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
+        elif abs(distance_to_goal) < step_size/4: 
+            self.current_goal_index += 1
+            self.get_logger().info(f"Looking for goal {self.current_goal_index}")
+            self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         else:
             self.current_goal_index += 1
             self.get_logger().info(f"Goal {self.current_goal_index} reached")
@@ -218,8 +223,6 @@ def main(args=None):
     max_iterations = 1000000
     rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
     robot_radius = int(input("Enter robot radius (in cm): "))
-    robot_radius = robot_radius + 5
-    
 
     while end_program:            
         if first or (choice == 'C'):
@@ -248,15 +251,8 @@ def main(args=None):
             cv2.imshow("Map RRT*", img_with_path)
             cv2.waitKey(1)
             cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
-
-            
-            #minimal_publisher = GoToGoal(trajectory)
-            #rclpy.spin(minimal_publisher)
-            #print('HOLA')
-            #minimal_publisher.destroy_node()
-            #rclpy.shutdown()
         
-            minimal_publisher = GoToGoal(trajectory)
+            minimal_publisher = GoToGoal(trajectory, step_size_cm)
             while rclpy.ok() and not minimal_publisher.end_of_goals:
                 rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
             minimal_publisher.destroy_node()
