@@ -104,7 +104,7 @@ class GoToGoal(Node):
             self.last_lightring = lightring
 
         else:
-            if any(lectura > 800 for lectura in self.ir): #self.media >= 250:
+            if any(lectura > 800 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 print('ESTORBAAAS')
