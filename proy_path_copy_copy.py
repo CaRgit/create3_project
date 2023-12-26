@@ -79,8 +79,8 @@ class GoToGoal(Node):
         kp_ang, kp_lin = 10, 5
 
         if abs(distance_to_goal) > distance_tolerance:
-            new_vel.angular.z += kp_ang * angle_error
-            new_vel.linear.x += (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
+            new_vel.angular.z = kp_ang * angle_error
+            new_vel.linear.x = (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal
             print(new_vel.linear.x)
         elif abs(distance_to_goal) < self.step_size: 
             self.current_goal_index += 1
@@ -104,7 +104,7 @@ class GoToGoal(Node):
             self.last_lightring = lightring
 
         else:
-            if any(lectura > 600 for lectura in self.ir): #self.media >= 250:
+            if any(lectura > 800 for lectura in self.ir): #self.media >= 250:
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 print('ESTORBAAAS')
