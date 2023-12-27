@@ -61,7 +61,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             node_new = Node(int(x_new), int(y_new))
             #min_cost_node = nearest_node(nodes, x_new, y_new)
 
-            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
+            if not has_collision(img, nearest.x, nearest.y, node_new.x, node_new.y, diametro_robot):
                 node_new.parent = nearest
                 node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
 
