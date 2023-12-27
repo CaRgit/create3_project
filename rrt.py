@@ -96,7 +96,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
-                    return img_with_path, nodes
+                    #return img_with_path, nodes
 
     return img_with_path, nodes
 
