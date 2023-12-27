@@ -64,7 +64,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewirin
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
             #near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
-            min_cost_node = nearest_node(near_nodes, x_new, y_new)
+            #min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
                 node_new.parent = min_cost_node
