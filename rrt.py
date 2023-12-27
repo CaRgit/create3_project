@@ -78,6 +78,9 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
                 nodes.append(node_new)
                 cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
+                for near_node in near_nodes:
+                    cv2.line(img_with_path, (near_node.x, near_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
+                    
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
