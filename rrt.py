@@ -76,6 +76,16 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewirin
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
+                
+                # Dibujar línea entre el nuevo nodo y su nodo padre
+                cv2.line(img_with_path, (node_new.x, node_new.y), (min_cost_node.x, min_cost_node.y), (255, 0, 0), 1)
+                
+                # Dibujar conexiones para nodos existentes en el árbol
+                for existing_node in nodes:
+                    if existing_node.parent is not None:
+                        cv2.line(img_with_path, (existing_node.x, existing_node.y),
+                                 (existing_node.parent.x, existing_node.parent.y), (0, 255, 0), 1)
+
 
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
