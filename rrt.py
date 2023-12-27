@@ -96,9 +96,9 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
-                    return img_with_path, nodes, start, goal
+                    return img_with_path, nodes
 
-    return img_with_path, nodes, start, goal
+    return img_with_path, nodes
 
 
 def save_path_to_txt(nodes, filename, scale=0.01):
@@ -136,7 +136,7 @@ def main():
 
     start, goal = click_coordinates[0], click_coordinates[1]
 
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
+    img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
 
     for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
