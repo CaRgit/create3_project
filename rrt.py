@@ -40,28 +40,26 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): 
+def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
-    img_with_path = np.copy(img) 
+    img_with_path = np.copy(img)
     goal_reached = False
 
     for _ in range(max_iter):
-        
         if random.uniform(0, 1) < 0.2:
             x_rand, y_rand = goal
+        elif random.uniform(0, 1) < 0.8:
+            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
+            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
-            if random.uniform(0, 1) < 0.8:
-                x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
-                y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
-            else:
-                x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
-            
+            x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes] #if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
+            near_nodes = [node for node in nodes]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
@@ -74,14 +72,13 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
-                
+
                 cv2.line(img_with_path, (node_new.x, node_new.y), (min_cost_node.x, min_cost_node.y), (255, 0, 0), 1)
-                
+
                 for existing_node in nodes:
                     if existing_node.parent is not None:
                         cv2.line(img_with_path, (existing_node.x, existing_node.y),
                                  (existing_node.parent.x, existing_node.parent.y), (0, 255, 0), 1)
-
 
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
@@ -94,12 +91,13 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        current_node = current_node.parent                            
+                        current_node = current_node.parent
+
                     for node in nodes:
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
-                    #return img_with_path, nodes, start, goal
+                    return img_with_path, nodes, start, goal
 
     return img_with_path, nodes, start, goal
 
