@@ -80,7 +80,7 @@ class GoToGoal(Node):
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
-            new_vel.linear.x = min(0, (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal)
+            new_vel.linear.x = max(0, (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal)
             print(new_vel.linear.x)
         elif abs(distance_to_goal) < self.step_size: 
             self.current_goal_index += 1
