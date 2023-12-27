@@ -28,8 +28,8 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
-        marker_type = cv2.MARKER_CROSS
-        marker_size, thickness = 10, 2
+        # marker_type = cv2.MARKER_CROSS  # Unused
+        # marker_size, thickness = 10, 2  # Unused
 
         if not click_coordinates:
             start = (x, y)
@@ -39,12 +39,12 @@ def mouse_callback(event, x, y, flags, param):
             click_coordinates.append(goal)
 
         for point, label in zip(click_coordinates, ['ini', 'fin']):
-            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
+            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewiring_radius_cm,
     nodes = [Node(*start)]
-    img_with_path = np.copy(img)
+    # img_with_path = np.copy(img)  # Unused
     goal_reached = False
 
     for _ in range(max_iter):
@@ -77,10 +77,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewirin
 
                 nodes.append(node_new)
 
-                # Dibujar las conexiones entre el nuevo nodo y sus vecinos
-                for near_node in near_nodes:
-                    cv2.line(img_with_path, (near_node.x, near_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
-
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
@@ -101,7 +97,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewirin
 
     return img_with_path, nodes, start, goal
 
-
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
         for node in nodes:
@@ -111,12 +106,10 @@ def save_path_to_txt(nodes, filename, scale=0.01):
 
 def draw_markers_on_image(img, start, goal):
     img_with_markers = np.copy(img)
-    marker_params = [(start, 'ini'), (goal, 'fin')]
-    
-    for point, label in marker_params:
+    # marker_params = [(start, 'ini'), (goal, 'fin')]  # Redundant
+    for point, label in zip([start, goal], ['ini', 'fin']):
         cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-    
     return img_with_markers
 
 def main():
