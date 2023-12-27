@@ -42,7 +42,7 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diametro_robot):
+def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewiring_radius_cm,
     nodes = [Node(*start)]
     img_with_path = np.copy(img)
     goal_reached = False
@@ -63,7 +63,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
+            #near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
@@ -128,7 +128,7 @@ def main():
 
     step_size_cm = float(input("Ingrese el tamaño del paso (en cm): "))
     max_iterations = int(10000)
-    rewiring_radius_cm = float(input("Ingrese el radio de rewiring (en cm): "))
+    #rewiring_radius_cm = float(input("Ingrese el radio de rewiring (en cm): "))
     diametro_robot = int(input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
@@ -143,7 +143,7 @@ def main():
 
     start, goal = click_coordinates[0], click_coordinates[1]
 
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, diametro_robot)
+    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot) #rewiring_radius_cm,
 
     for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
