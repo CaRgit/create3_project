@@ -47,7 +47,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
     img_with_path = np.copy(img)
     goal_reached = False
 
-    for iteration in range(max_iter):
+    for _ in range(max_iter):
         
         if random.uniform(0, 1) < 0.2:
             x_rand, y_rand = goal
@@ -91,9 +91,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
                     cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
                     goal_reached = True
 
-                    # Si se alcanza la meta, restablecer el objetivo para seguir explorando
-                    goal_reached = False
-
                 if goal_reached:
                     current_node = goal_node
                     while current_node.parent is not None:
@@ -103,7 +100,10 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
+                    return img_with_path, nodes, start, goal
+
     return img_with_path, nodes, start, goal
+
 
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
