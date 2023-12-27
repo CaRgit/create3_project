@@ -127,7 +127,7 @@ def main():
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     step_size_cm = float(input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(1000000)
+    max_iterations = int(10000)
     rewiring_radius_cm = float(input("Ingrese el radio de rewiring (en cm): "))
     diametro_robot = int(input("Ingrese el diametro del robot (en cm): "))
 
