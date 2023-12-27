@@ -56,12 +56,12 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             else:
                 x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
             
-        nearest = nearest_node(nodes, x_rand, y_rand)
+        #nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes] #if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
+            #near_nodes = [node for node in nodes] #if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
             min_cost_node = nearest_node(nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
@@ -75,10 +75,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
                 nodes.append(node_new)
                 
-                # Dibujar línea entre el nuevo nodo y su nodo padre
                 cv2.line(img_with_path, (node_new.x, node_new.y), (min_cost_node.x, min_cost_node.y), (255, 0, 0), 1)
                 
-                # Dibujar conexiones para nodos existentes en el árbol
                 for existing_node in nodes:
                     if existing_node.parent is not None:
                         cv2.line(img_with_path, (existing_node.x, existing_node.y),
@@ -101,7 +99,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
 
-                    return img_with_path, nodes, start, goal
+                    #return img_with_path, nodes, start, goal
 
     return img_with_path, nodes, start, goal
 
