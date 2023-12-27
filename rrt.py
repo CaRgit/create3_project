@@ -9,8 +9,8 @@ class Node:
         self.parent = None
         self.cost = 0.0
 
-def is_valid_point(img, x, y, radio_robot):
-    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), radio_robot, 255, thickness=1)
+def is_valid_point(img, x, y, diametro_robot):
+    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), diametro_robot, 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
 def nearest_node(nodes, x, y):
@@ -21,9 +21,9 @@ def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
-def has_collision(img, x1, y1, x2, y2, radio_robot):
+def has_collision(img, x1, y1, x2, y2, diametro_robot):
     points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
-    return any(not is_valid_point(img, int(x), int(y), radio_robot) for x, y in points)
+    return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
@@ -42,7 +42,7 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=marker_type, markerSize=marker_size, thickness=thickness)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio_robot):
+def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diametro_robot):
     nodes = [Node(*start)]
     img_with_path = np.copy(img)
     goal_reached = False
@@ -61,24 +61,24 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, radio
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
-        if is_valid_point(img, int(x_new), int(y_new), radio_robot):
+        if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
             near_nodes = [node for node in nodes if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
-            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, radio_robot):
+            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
                 node_new.parent = min_cost_node
                 node_new.cost = min_cost_node.cost + math.sqrt((node_new.x - min_cost_node.x)**2 + (node_new.y - min_cost_node.y)**2)
 
                 for near_node in near_nodes:
                     new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
-                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, radio_robot):
+                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, diametro_robot):
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
                 cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
-                if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], radio_robot):
+                if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
                     goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
@@ -123,7 +123,7 @@ def main():
     step_size_cm = float(input("Ingrese el tamaño del paso (en cm): "))
     max_iterations = int(1000000)
     rewiring_radius_cm = float(input("Ingrese el radio de rewiring (en cm): "))
-    radio_robot = int(input("Ingrese el radio del robot (en cm): "))
+    diametro_robot = int(input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
 
@@ -137,7 +137,7 @@ def main():
 
     start, goal = click_coordinates[0], click_coordinates[1]
 
-    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, radio_robot)
+    img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, diametro_robot)
 
     for point in [start, goal]:
         cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
