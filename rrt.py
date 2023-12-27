@@ -47,12 +47,12 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
     img_with_path = np.copy(img)
     goal_reached = False
 
-    for _ in range(max_iter):
+    for iteration in range(max_iter):
         
-        if random.uniform(0, 1) < 0.2:  # Ajusta el umbral según tus necesidades
+        if random.uniform(0, 1) < 0.2:
             x_rand, y_rand = goal
         else:
-            if random.uniform(0, 1) < 0.8: # Genera puntos cercanos al objetivo con una probabilidad más alta
+            if random.uniform(0, 1) < 0.8:
                 x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
                 y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
             else:
@@ -76,18 +76,23 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
                         near_node.parent, near_node.cost = node_new, new_cost
 
                 nodes.append(node_new)
-                cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
+                # Dibujar las conexiones entre el nuevo nodo y sus vecinos
                 for near_node in near_nodes:
                     cv2.line(img_with_path, (near_node.x, near_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
-                    
+
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
                     goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
                     nodes.append(goal_node)
+
+                    # Dibujar la conexión entre el último nodo y el objetivo
                     cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
                     goal_reached = True
+
+                    # Si se alcanza la meta, restablecer el objetivo para seguir explorando
+                    goal_reached = False
 
                 if goal_reached:
                     current_node = goal_node
@@ -97,8 +102,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, diame
                     for node in nodes:
                         if node.parent is not None:
                             cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
-
-                    return img_with_path, nodes, start, goal
 
     return img_with_path, nodes, start, goal
 
