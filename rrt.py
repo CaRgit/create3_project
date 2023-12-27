@@ -126,7 +126,7 @@ def main():
     cv2.imshow("Mapa", img)
 
     click_coordinates = []
-    img_with_markers = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    img_with_markers = copy(img)
     cv2.setMouseCallback("Mapa", mouse_callback, [click_coordinates, img_with_markers])
 
     while len(click_coordinates) < 2:
