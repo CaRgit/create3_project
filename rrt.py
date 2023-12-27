@@ -28,6 +28,9 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
+        # marker_type = cv2.MARKER_CROSS  # Unused
+        # marker_size, thickness = 10, 2  # Unused
+
         if not click_coordinates:
             start = (x, y)
             click_coordinates.append(start)
@@ -39,12 +42,13 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
+def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewiring_radius_cm,
     nodes = [Node(*start)]
-    img_with_path = np.copy(img)
+    img_with_path = np.copy(img)  # Unused
     goal_reached = False
 
     for _ in range(max_iter):
+        
         if random.uniform(0, 1) < 0.2:
             x_rand, y_rand = goal
         else:
@@ -59,7 +63,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes]
+            near_nodes = [node for node in nodes] #if math.sqrt((node.x - node_new.x)**2 + (node.y - node_new.y)**2) < rewiring_radius_cm]
             min_cost_node = nearest_node(near_nodes, x_new, y_new)
 
             if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
@@ -93,27 +97,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
     return img_with_path, nodes, start, goal
 
-def smooth_path(img, nodes, start, goal, diametro_robot):
-    smoothed_path = []
-    for i in range(len(nodes)-1):
-        current_node = nodes[i]
-        next_node = nodes[i+1]
-        points = np.column_stack((np.linspace(current_node.x, next_node.x, 50), np.linspace(current_node.y, next_node.y, 50)))
-
-        for x, y in points:
-            if is_valid_point(img, int(x), int(y), diametro_robot):
-                smoothed_path.append((int(x), int(y)))
-            else:
-                # Añadir punto de paso previo al camino suavizado
-                prev_x, prev_y = smoothed_path[-1] if smoothed_path else start
-                new_point_x, new_point_y = new_point(x, y, prev_x, prev_y, 1.0)
-                smoothed_path.append((int(new_point_x), int(new_point_y)))
-
-    # Añadir el último punto del camino original
-    smoothed_path.append((nodes[-1].x, nodes[-1].y))
-
-    return smoothed_path
-
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
         for node in nodes:
@@ -123,6 +106,7 @@ def save_path_to_txt(nodes, filename, scale=0.01):
 
 def draw_markers_on_image(img, start, goal):
     img_with_markers = np.copy(img)
+    # marker_params = [(start, 'ini'), (goal, 'fin')]  # Redundant
     for point, label in zip([start, goal], ['ini', 'fin']):
         cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -134,6 +118,7 @@ def main():
 
     step_size_cm = float(input("Ingrese el tamaño del paso (en cm): "))
     max_iterations = int(10000)
+    #rewiring_radius_cm = float(input("Ingrese el radio de rewiring (en cm): "))
     diametro_robot = int(input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
@@ -149,10 +134,9 @@ def main():
     start, goal = click_coordinates[0], click_coordinates[1]
 
     img_with_path, nodes, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
-    smoothed_path = smooth_path(img, nodes, start, goal, diametro_robot)
 
     for point in [start, goal]:
-        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
 
     cv2.destroyAllWindows()
 
@@ -168,15 +152,8 @@ def main():
 
     save_path_to_txt(nodes, 'path.txt', scale=0.01)
 
-    # Visualizar el camino suavizado
-    img_smoothed_path = np.copy(img)
-    for point in smoothed_path:
-        cv2.circle(img_smoothed_path, (point[0], point[1]), 2, (0, 255, 0), -1)
-
-    cv2.imshow("Mapa con RRT* y Camino Suavizado", img_smoothed_path)
-    cv2.waitKey(0)
-
 if __name__ == "__main__":
     main()
+
 
 
