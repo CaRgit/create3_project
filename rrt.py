@@ -86,6 +86,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                     current_node = goal_node
                     while current_node.parent is not None:
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+                        cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 255), 2)
                         current_node = current_node.parent
 
                     return img_with_path, nodes            
