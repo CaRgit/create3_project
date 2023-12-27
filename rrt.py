@@ -59,11 +59,11 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
             node_new = Node(int(x_new), int(y_new))
-            min_cost_node = nearest_node(nodes, x_new, y_new)
+            #min_cost_node = nearest_node(nodes, x_new, y_new)
 
-            #if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
-            node_new.parent = nearest
-            node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
+            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, diametro_robot):
+                node_new.parent = nearest
+                node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
 
                 for near_node in nodes:
                     new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
@@ -72,7 +72,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
                 nodes.append(node_new)
 
-                cv2.line(img_with_path, (node_new.x, node_new.y), (min_cost_node.x, min_cost_node.y), (255, 0, 0), 1)
+                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (255, 0, 0), 1)
 
                 for existing_node in nodes:
                     if existing_node.parent is not None:
