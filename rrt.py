@@ -77,18 +77,11 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewirin
 
                 nodes.append(node_new)
 
-                # Dibujar las conexiones entre el nuevo nodo y sus vecinos
-                for near_node in near_nodes:
-                    cv2.line(img_with_path, (near_node.x, near_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
-
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
                     goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
                     nodes.append(goal_node)
-
-                    # Dibujar la conexión entre el último nodo y el objetivo
-                    cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
                     goal_reached = True
 
                 if goal_reached:
