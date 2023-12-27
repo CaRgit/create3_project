@@ -28,9 +28,6 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
-        # marker_type = cv2.MARKER_CROSS  # Unused
-        # marker_size, thickness = 10, 2  # Unused
-
         if not click_coordinates:
             start = (x, y)
             click_coordinates.append(start)
@@ -42,9 +39,9 @@ def mouse_callback(event, x, y, flags, param):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewiring_radius_cm,
+def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
-    img_with_path = np.copy(img)  # Unused
+    img_with_path = np.copy(img)  
     goal_reached = False
 
     for _ in range(max_iter):
@@ -106,7 +103,6 @@ def save_path_to_txt(nodes, filename, scale=0.01):
 
 def draw_markers_on_image(img, start, goal):
     img_with_markers = np.copy(img)
-    # marker_params = [(start, 'ini'), (goal, 'fin')]  # Redundant
     for point, label in zip([start, goal], ['ini', 'fin']):
         cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
