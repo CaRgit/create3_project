@@ -44,7 +44,7 @@ def mouse_callback(event, x, y, flags, param):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot): #rewiring_radius_cm,
     nodes = [Node(*start)]
-    # img_with_path = np.copy(img)  # Unused
+    img_with_path = np.copy(img)  # Unused
     goal_reached = False
 
     for _ in range(max_iter):
