@@ -77,8 +77,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
                 for existing_node in nodes:
                     if existing_node.parent is not None:
-                        cv2.line(img_with_path, (existing_node.x, existing_node.y),
-                                 (existing_node.parent.x, existing_node.parent.y), (0, 255, 0), 1)
+                        cv2.line(img_with_path, (existing_node.x, existing_node.y), (existing_node.parent.x, existing_node.parent.y), (0, 255, 0), 1)
 
                 if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
@@ -93,9 +92,14 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
                         current_node = current_node.parent
 
+                    for node in nodes:
+                        if node.parent is not None:
+                            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)
+
                     return img_with_path, nodes, start, goal
 
     return img_with_path, nodes, start, goal
+
 
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
