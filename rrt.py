@@ -72,7 +72,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                 nodes.append(node_new)
 
                 cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 255), -1)
-                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (255, 0, 0), 1)
+                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
 
                 #for existing_node in nodes:
                  #   if existing_node.parent is not None:
