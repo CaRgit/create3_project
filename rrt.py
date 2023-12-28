@@ -22,7 +22,7 @@ def new_point(x_rand, y_rand, x_near, y_near, step_size):
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
 def has_collision(img, x1, y1, x2, y2, diametro_robot):
-    points = np.column_stack((np.linspace(x1, x2, 250), np.linspace(y1, y2, 250)))
+    points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
     return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
 def simplify_path(nodes, img, diametro_robot):
@@ -34,8 +34,7 @@ def simplify_path(nodes, img, diametro_robot):
         while i < len(nodes) - 1 and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
             i += 1
             next_node = nodes[i]
-        simplified_nodes.append(next_node)
-        i += 1
+        simplified_nodes.append(nodes[i])
     return simplified_nodes
 
 
