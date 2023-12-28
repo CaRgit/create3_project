@@ -91,7 +91,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         current_node = goal_node
         while current_node.parent is not None:
             #cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-            cv2.circle(img_with_path, (current_node.x, current_node.y), 3, (0, 0, 255), -1)
+            cv2.circle(img_with_path, (current_node.x, current_node.y), 5, (0, 0, 255), -1)
             current_node = current_node.parent
     
         return img_with_path, nodes
@@ -116,7 +116,7 @@ def main():
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     step_size_cm = float(15) #input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(500)
+    max_iterations = int(250)
     diametro_robot = int(5) #input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
