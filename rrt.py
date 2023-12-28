@@ -17,35 +17,9 @@ def is_valid_point(img, x, y, diametro_robot):
     #nodes_sorted = sorted(nodes, key=lambda node: node.cost)
     #return nodes_sorted[0]
 
-#def nearest_node(nodes, x, y):
-    #distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
-    #return nodes[np.argmin(distances)]
-
-def less_cost_and_nearest_to_goal(nodes, goal):
-    # Calcula las distancias a cada nodo y selecciona el nodo más cercano al objetivo
-    distances_to_goal = [math.sqrt((node.x - goal[0])**2 + (node.y - goal[1])**2) for node in nodes]
-
-    if not distances_to_goal:
-        return None
-
-    # Encuentra el índice del nodo más cercano al objetivo
-    nearest_to_goal_index = np.argmin(distances_to_goal)
-
-    # Obtén el nodo más cercano al objetivo
-    nearest_to_goal = nodes[nearest_to_goal_index]
-
-    # Filtra los nodos que están cerca del nodo más cercano al objetivo
-    threshold_distance = 10  # Ajusta según sea necesario
-    close_nodes_to_goal = [node for node in nodes if math.sqrt((node.x - nearest_to_goal.x)**2 + (node.y - nearest_to_goal.y)**2) < threshold_distance]
-
-    # Ordena los nodos cercanos al objetivo por costo acumulado y selecciona el de menor costo
-    close_nodes_sorted = sorted(close_nodes_to_goal, key=lambda node: node.cost)
-    
-    if close_nodes_sorted:
-        return close_nodes_sorted[0]
-    else:
-        return None
-
+def nearest_node(nodes, x, y):
+    distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
+    return nodes[np.argmin(distances)]
 
 def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
@@ -77,15 +51,16 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.3:
+        rand = random.uniform(0, 1)
+        if rand < 0.2:
             x_rand, y_rand = goal
-        #elif random.uniform(0, 1) < 0.5:
-            #x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
-            #y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
+        elif 0.2 < rand < 0.4:
+            x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
+            y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        nearest = less_cost_and_nearest_to_goal(nodes, goal) #less_cost_node(nodes, x_rand, y_rand)
+        nearest = nearest_node(nodes, x, y)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
