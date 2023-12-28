@@ -33,7 +33,7 @@ def simplify_path(nodes, img, diametro_robot):
         next_node = nodes[i + 1]
         while i < len(nodes) - 1 and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
             i += 1
-            next_node = nodes[i + 1]
+            next_node = nodes[i]
         simplified_nodes.append(next_node)
         i += 1
     return simplified_nodes
