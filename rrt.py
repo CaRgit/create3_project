@@ -85,12 +85,12 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                     if (node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)) < goal_node.cost:
                         goal_node.parent = node_new
                         goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
-                    print(1)
+                   
 
     if goal_reached:
         current_node = goal_node
         while current_node.parent is not None:
-            cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
+            #cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (current_node.x, current_node.y), 3, (0, 0, 255), -1)
             current_node = current_node.parent
     
