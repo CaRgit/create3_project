@@ -78,11 +78,11 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                 if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     if not goal_reached:
                         penult_nodo = node_new
-                        coste_total = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
+                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
                         goal_reached = True
-                    if (node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)) < coste_total:
+                    if (node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < coste_total:
                         penult_nodo = node_new
-                        coste_total = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
+                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
                    
 
     if goal_reached:
