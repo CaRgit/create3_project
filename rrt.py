@@ -58,6 +58,7 @@ def mouse_callback(event, x, y, flags, param):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
+    ini_node = Node(*start)
     nodos = []
     img_with_path = np.copy(img)
     goal_reached = False
@@ -95,7 +96,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
                         print(coste_total)
                    
-
     if goal_reached:
         goal_node = Node(*goal)
         goal_node.parent = penult_nodo
@@ -106,6 +106,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         while current_node.parent is not None:
             nodos.insert(0, current_node)
             current_node = current_node.parent
+        nodos.insert(0, ini_node)
 
         nodos_simp=simplify_path(nodos, img, diametro_robot)
 
