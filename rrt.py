@@ -108,9 +108,12 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             current_node = current_node.parent
 
         nodos_simp=simplify_path(nodos, img, diametro_robot)
-        
+
+        for node in nodes:
+            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 1.5)
+            cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)   
         for node in nodos_simp:
-            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
+            cv2.line(img_with_path, (node.x, node.y), (node[-1].x, node[-1].y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (node.x, node.y), 5, (0, 0, 255), -1)   
             
         return img_with_path, nodos_simp
