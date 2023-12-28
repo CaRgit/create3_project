@@ -84,7 +84,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         goal_reached = True
                     if (node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)) < goal_node.cost:
                         goal_node.parent = node_new
-                        goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)S
+                        goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
                     print(1)
 
     if goal_reached:
