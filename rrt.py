@@ -42,6 +42,7 @@ def mouse_callback(event, x, y, flags, param):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
+    nodos = []
     img_with_path = np.copy(img)
     goal_reached = False
 
