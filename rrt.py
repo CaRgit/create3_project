@@ -47,11 +47,11 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.3:
+        if random.uniform(0, 1) < 0.5:
             x_rand, y_rand = goal
-        elif random.uniform(0, 1) < 0.5:
-            x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
-            y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
+        #elif random.uniform(0, 1) < 0.5:
+            #x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
+            #y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
@@ -97,9 +97,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             cv2.circle(img_with_path, (current_node.x, current_node.y), 5, (0, 0, 255), -1)
             nodos.insert(0, current_node)
             current_node = current_node.parent
-
-        
-    
+            
         return img_with_path, nodos
 
 
