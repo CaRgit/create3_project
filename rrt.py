@@ -106,10 +106,10 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         while current_node.parent is not None:
             nodos.insert(0, current_node)
             current_node = current_node.parent
-        nodos.insert(0, ini_node)
+        
 
         nodos_simp=simplify_path(nodos, img, diametro_robot)
-
+        
         for node in nodos:
             cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)  
@@ -117,7 +117,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             cv2.line(img_with_path, (nodos_simp[i - 1].x, nodos_simp[i - 1].y), (nodos_simp[i].x, nodos_simp[i].y), (0, 255, 0), 3)
             cv2.circle(img_with_path, (nodos_simp[i].x, nodos_simp[i].y), 4, (0, 0, 255), -1)
         
-        return img_with_path, nodos_simp
+        return img_with_path, nodos
 
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
