@@ -83,6 +83,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                     if (node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < coste_total:
                         penult_nodo = node_new
                         coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
+                        print(coste_total)
                    
 
     if goal_reached:
@@ -119,7 +120,7 @@ def main():
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     step_size_cm = float(15) #input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(500)
+    max_iterations = int(300)
     diametro_robot = int(5) #input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
