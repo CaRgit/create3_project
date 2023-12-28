@@ -65,11 +65,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                 node_new.parent = nearest
                 node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
 
-                #for near_node in nodes:
-                 #   new_cost = node_new.cost + math.sqrt((node_new.x - near_node.x)**2 + (node_new.y - near_node.y)**2)
-                  #  if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, diametro_robot):
-                   #     near_node.parent, near_node.cost = node_new, new_cost
-
                 nodes.append(node_new)
 
                 cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 255), -1)
@@ -96,12 +91,14 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         
         current_node = goal_node
         while current_node.parent is not None:
-            #if not has_collision(img, current_node.x, current_node.y, current_node.parent.x, current_node.parent.y, diametro_robot):
-            
+            if not has_collision(img, current_node.x, current_node.y, current_node.parent.x, current_node.parent.y, diametro_robot):
+                current_node = current_node.parent
             cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (current_node.x, current_node.y), 5, (0, 0, 255), -1)
             nodos.insert(0, current_node)
             current_node = current_node.parent
+
+        
     
         return img_with_path, nodos
 
