@@ -34,21 +34,18 @@ def simplify_path(nodes, img, diametro_robot):
         while i < len(nodes) and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
             next_node = nodes[i]
             i += 1
-            
         simplified_nodes.append(nodes[i - 1])
     return simplified_nodes
 
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
-
         if not click_coordinates:
             start = (x, y)
             click_coordinates.append(start)
         else:
             goal = (x, y)
             click_coordinates.append(goal)
-
         for point, label in zip(click_coordinates, ['ini', 'fin']):
             cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
