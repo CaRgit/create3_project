@@ -13,11 +13,30 @@ def is_valid_point(img, x, y, diametro_robot):
     mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), diametro_robot, 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
-def less_cost_node(nodes, x, y):
-    nodes_sorted = sorted(nodes, key=lambda node: node.cost)
-    return nodes_sorted[0]
+#def less_cost_node(nodes, x, y):
+    #nodes_sorted = sorted(nodes, key=lambda node: node.cost)
+    #return nodes_sorted[0]
+
+#def nearest_node(nodes, x, y):
     #distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
     #return nodes[np.argmin(distances)]
+
+def less_cost_and_nearest_to_goal(nodes, goal):
+    # Calcula las distancias a cada nodo y selecciona el nodo más cercano al objetivo
+    distances_to_goal = [math.sqrt((node.x - goal[0])**2 + (node.y - goal[1])**2) for node in nodes]
+    nearest_to_goal_index = np.argmin(distances_to_goal)
+
+    # Filtra los nodos que están cerca del nodo más cercano al objetivo
+    threshold_distance = 10  # Ajusta según sea necesario
+    close_nodes_to_goal = [node for node in nodes if distances_to_goal[node] < threshold_distance]
+
+    # Ordena los nodos cercanos al objetivo por costo acumulado y selecciona el de menor costo
+    close_nodes_sorted = sorted(close_nodes_to_goal, key=lambda node: node.cost)
+    
+    if close_nodes_sorted:
+        return close_nodes_sorted[0]
+    else:
+        return None
 
 def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
@@ -57,7 +76,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        nearest = less_cost_node(nodes, x_rand, y_rand)
+        nearest = less_cost_and_nearest_to_goal(nodes, goal) #less_cost_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
