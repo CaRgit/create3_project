@@ -49,8 +49,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         if random.uniform(0, 1) < 0.3:
             x_rand, y_rand = goal
         elif random.uniform(0, 1) < 0.5:
-            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
-            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
+            x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
+            y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
@@ -75,7 +75,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                 cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
                 
 
-                if not goal_reached and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
+                if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     goal_node = Node(*goal)
                     goal_node.parent = node_new
                     goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
