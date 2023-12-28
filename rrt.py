@@ -55,7 +55,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        nearest = nearest_node(nodes!=goal_node, x_rand, y_rand)
+        n_nodes = [node for node in nodes if node!=goal_node]
+        nearest = nearest_node(n_nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
