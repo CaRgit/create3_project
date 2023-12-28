@@ -48,7 +48,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     for _ in range(max_iter):
         if random.uniform(0, 1) < 0.3:
             x_rand, y_rand = goal
-        elif random.uniform(0, 1) < 0.7:
+        elif random.uniform(0, 1) < 0.5:
             x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
             y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
