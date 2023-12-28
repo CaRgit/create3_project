@@ -21,11 +21,11 @@ def new_point(x_rand, y_rand, x_near, y_near, step_size):
     theta = math.atan2(y_rand - y_near, x_rand - x_near)
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
-def has_collision(img, x1, y1, x2, y2, diametro_robot):
-    points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
+def has_collision(img, x1, y1, x2, y2, diametro_robot, num_points_collision=100):
+    points = np.column_stack((np.linspace(x1, x2, num_points_collision), np.linspace(y1, y2, num_points_collision)))
     return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
-def simplify_path(nodes, img, diametro_robot):
+def simplify_path(nodes, img, diametro_robot, num_points_simplify=100):
     simplified_nodes = [nodes[0]]
     i = 0
     while i < len(nodes) - 1:
@@ -38,33 +38,24 @@ def simplify_path(nodes, img, diametro_robot):
         simplified_nodes.append(nodes[i - 1])
     return simplified_nodes
 
-def mouse_callback(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONUP:
-        click_coordinates, img_with_markers = param
-
-        if not click_coordinates:
-            start = (x, y)
-            click_coordinates.append(start)
-        else:
-            goal = (x, y)
-            click_coordinates.append(goal)
-
-        for point, label in zip(click_coordinates, ['ini', 'fin']):
-            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
-            cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+def draw_path_on_image(img, nodes, nodes_simplified):
+    img_with_path = np.copy(img)
+    for node in nodes:
+        if node.parent is not None:
+            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
+        cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)  
+    for i in range(1, len(nodes_simplified)):
+        cv2.line(img_with_path, (nodes_simplified[i - 1].x, nodes_simplified[i - 1].y), (nodes_simplified[i].x, nodes_simplified[i].y), (0, 255, 0), 3)
+        cv2.circle(img_with_path, (nodes_simplified[i].x, nodes_simplified[i].y), 4, (0, 0, 255), -1)
+    return img_with_path
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
-    nodos = []
     img_with_path = np.copy(img)
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.1:
-            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
-            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
-        else:
-            x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+        x_rand, y_rand = generate_random_point(goal, img.shape[1], img.shape[0])
 
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
@@ -108,39 +99,27 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             current_node = current_node.parent
         nodos.insert(0, start_node)
         
-        nodos_simp=simplify_path(nodos, img, diametro_robot)
+        nodos_simp = simplify_path(nodos, img, diametro_robot)
         
-        for node in nodos:
-            if node.parent is not None:
-                cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
-            cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)  
-        for i in range(1, len(nodos_simp)):
-            cv2.line(img_with_path, (nodos_simp[i - 1].x, nodos_simp[i - 1].y), (nodos_simp[i].x, nodos_simp[i].y), (0, 255, 0), 3)
-            cv2.circle(img_with_path, (nodos_simp[i].x, nodos_simp[i].y), 4, (0, 0, 255), -1)
+        img_with_path = draw_path_on_image(img, nodos, nodos_simp)
         
         return img_with_path, nodos_simp
 
-def save_path_to_txt(nodes, filename, scale=0.01):
-    with open(filename, 'w') as file:
-        for node in nodes:
-            if node.parent is not None:
-                x, y = round(node.x * scale, 2), round(node.y * scale, 2)
-                file.write(f'{x} {y}\n')
-
-def draw_markers_on_image(img, start, goal):
-    img_with_markers = np.copy(img)
-    for point, label in zip([start, goal], ['ini', 'fin']):
-        cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
-        cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-    return img_with_markers
+def generate_random_point(goal, img_width, img_height, exploration_radius=50):
+    if random.uniform(0, 1) < 0.1:
+        x_rand = random.uniform(max(0, goal[0] - exploration_radius), min(img_width - 1, goal[0] + exploration_radius))
+        y_rand = random.uniform(max(0, goal[1] - exploration_radius), min(img_height - 1, goal[1] + exploration_radius))
+    else:
+        x_rand, y_rand = random.randint(0, img_width - 1), random.randint(0, img_height - 1)
+    return x_rand, y_rand
 
 def main():
     img_path = f'./{"mapa.png"}'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
-    step_size_cm = float(15) #input("Ingrese el tamaño del paso (en cm): "))
+    step_size_cm = float(15)
     max_iterations = int(500)
-    diametro_robot = int(15) #input("Ingrese el diametro del robot (en cm): "))
+    diametro_robot = int(15)
 
     cv2.imshow("Mapa", img)
 
@@ -157,7 +136,7 @@ def main():
     img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
 
     for point in [start, goal]:
-        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
 
     cv2.destroyAllWindows()
 
@@ -175,6 +154,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
