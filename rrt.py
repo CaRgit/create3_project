@@ -42,6 +42,7 @@ def mouse_callback(event, x, y, flags, param):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
+    goal_node = Node(*goal)
     img_with_path = np.copy(img)
     goal_reached = False
 
@@ -54,7 +55,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        nearest = nearest_node(nodes, x_rand, y_rand)
+        nearest = nearest_node(nodes!=goal_node, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
@@ -77,7 +78,6 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
                 if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot):
                     if not goal_reached:
-                        goal_node = Node(*goal)
                         goal_node.parent = node_new
                         goal_node.cost = node_new.cost + math.sqrt((goal_node.x - node_new.x)**2 + (goal_node.y - node_new.y)**2)
                         nodes.append(goal_node)
