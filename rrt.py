@@ -10,7 +10,7 @@ class Node:
         self.cost = 0.0
 
 def is_valid_point(img, x, y, diametro_robot):
-    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), int(diametro_robot/3), 255, thickness=1)
+    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), int(diametro_robot/2), 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
 def nearest_node(nodes, x, y):
