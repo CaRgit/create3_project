@@ -13,10 +13,6 @@ def is_valid_point(img, x, y, diametro_robot):
     mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), diametro_robot, 255, thickness=1)
     return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
 
-#def less_cost_node(nodes, x, y):
-    #nodes_sorted = sorted(nodes, key=lambda node: node.cost)
-    #return nodes_sorted[0]
-
 def nearest_node(nodes, x, y):
     distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
     return nodes[np.argmin(distances)]
@@ -35,7 +31,7 @@ def simplify_path(nodes, img, diametro_robot):
     while i < len(nodes) - 1:
         current_node = nodes[i]
         next_node = nodes[i + 1]
-        while i < len(nodes) - 1 and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
+        while i < len(nodes) and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
             i += 1
             next_node = nodes[i]
         simplified_nodes.append(nodes[i - 1])
