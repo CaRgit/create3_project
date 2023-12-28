@@ -58,7 +58,6 @@ def mouse_callback(event, x, y, flags, param):
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [Node(*start)]
-    ini_node = Node(*start)
     nodos = []
     img_with_path = np.copy(img)
     goal_reached = False
@@ -101,17 +100,22 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         goal_node.parent = penult_nodo
         goal_node.cost = coste_total
         nodes.append(goal_node)
+
+        start_node = Node(*start)
+        start_node.parent = None
+        start_node.cost = 0.0
         
         current_node = goal_node
         while current_node.parent is not None:
             nodos.insert(0, current_node)
             current_node = current_node.parent
+        nodos.insert(0, start_node)
         
-
         nodos_simp=simplify_path(nodos, img, diametro_robot)
         
         for node in nodos:
-            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
+            node.parent is not None:
+                cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)  
         for i in range(1, len(nodos_simp)):
             cv2.line(img_with_path, (nodos_simp[i - 1].x, nodos_simp[i - 1].y), (nodos_simp[i].x, nodos_simp[i].y), (0, 255, 0), 3)
