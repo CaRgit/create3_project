@@ -51,7 +51,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.2:
+        if random.uniform(0, 1) < 0.1:
             x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
             y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
@@ -121,7 +121,7 @@ def main():
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     step_size_cm = float(15) #input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(1000)
+    max_iterations = int(500)
     diametro_robot = int(15) #input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
