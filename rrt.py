@@ -121,7 +121,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             cv2.line(img_with_path, (nodos_simp[i - 1].x, nodos_simp[i - 1].y), (nodos_simp[i].x, nodos_simp[i].y), (0, 255, 0), 3)
             cv2.circle(img_with_path, (nodos_simp[i].x, nodos_simp[i].y), 4, (0, 0, 255), -1)
         
-        return img_with_path, nodos
+        return img_with_path, nodos_simp
 
 def save_path_to_txt(nodes, filename, scale=0.01):
     with open(filename, 'w') as file:
