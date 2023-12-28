@@ -81,8 +81,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
                 nodes.append(node_new)
 
-                cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 255), -1)
-                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
+                cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 120), -1)
+                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 120, 0), 1)
                 
                 if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) <= step_size_cm):
                     if not goal_reached:
@@ -110,8 +110,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         nodos_simp=simplify_path(nodos, img, diametro_robot)
 
         for node in nodos:
-            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 1.5)
-            cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)   
+            cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 1)
+            cv2.circle(img_with_path, (node.x, node.y), 3, (0, 0, 255), -1)  
         for node in nodos_simp:
             cv2.line(img_with_path, (node.x, node.y), (node[-1].x, node[-1].y), (0, 255, 0), 2)
             cv2.circle(img_with_path, (node.x, node.y), 5, (0, 0, 255), -1)   
