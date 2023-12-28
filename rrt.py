@@ -51,16 +51,13 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        rand = random.uniform(0, 1)
-        if rand < 0.2:
-            x_rand, y_rand = goal
-        elif 0.2 < rand < 0.4:
-            x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
-            y_rand = random.uniform(max(0, goal[1] - 100), min(img.shape[0] - 1, goal[1] + 100))
+        if random.uniform(0, 1) < 0.3:
+            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
+            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
             x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        nearest = nearest_node(nodes, x, y)
+        nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
