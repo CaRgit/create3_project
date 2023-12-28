@@ -47,7 +47,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.5:
+        if random.uniform(0, 1) < 0.2:
             x_rand, y_rand = goal
         #elif random.uniform(0, 1) < 0.5:
             #x_rand = random.uniform(max(0, goal[0] - 100), min(img.shape[1] - 1, goal[0] + 100))
@@ -70,8 +70,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                 cv2.circle(img_with_path, (node_new.x, node_new.y), 2, (0, 0, 255), -1)
                 cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
                 
-
-                if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < step_size_cm):
+                if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) <= step_size_cm):
                     if not goal_reached:
                         penult_nodo = node_new
                         coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
@@ -119,9 +118,9 @@ def main():
     img_path = f'./{"mapa.png"}'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
-    step_size_cm = float(15) #input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(5000)
-    diametro_robot = int(5) #input("Ingrese el diametro del robot (en cm): "))
+    step_size_cm = float(20) #input("Ingrese el tamaño del paso (en cm): "))
+    max_iterations = int(1000)
+    diametro_robot = int(10) #input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
 
