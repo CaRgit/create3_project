@@ -47,7 +47,7 @@ def mouse_callback(event, x, y, flags, param):
             goal = (x, y)
             click_coordinates.append(goal)
         for point, label in zip(click_coordinates, ['ini', 'fin']):
-            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+            cv2.drawMarker(img_with_markers, point, (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3)
             cv2.putText(img_with_markers, label, (point[0] + 10, point[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
@@ -125,7 +125,7 @@ def save_path_to_txt(nodes, filename, scale=0.01):
 def draw_markers_on_image(img, start, goal):
     img_with_markers = np.copy(img)
     for point, label in zip([start, goal], ['ini', 'fin']):
-        cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.drawMarker(img_with_markers, (int(point[0]), int(point[1])), (0, 0, 255), markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3)
         cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return img_with_markers
 
@@ -152,7 +152,7 @@ def main():
     img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
 
     for point in [start, goal]:
-        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=2)
+        cv2.drawMarker(img_with_path, (int(point[0]), int(point[1])), (0, 0, 255),markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3)
 
     cv2.destroyAllWindows()
 
