@@ -12,9 +12,9 @@ import numpy as np
 import random
 import time
 
-class GoToGoalInitializer(Node):
+class GetInitialPosition(Node):
     def __init__(self):
-        super().__init__("GoToGoalInitializerNode")
+        super().__init__("GetInitialPosition")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         #self.initial_position_set = False
         self.start_time = time.time()
@@ -82,10 +82,6 @@ class GoToGoal(Node):
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = max(0, (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal)
             print(new_vel.linear.x)
-        elif abs(distance_to_goal) < self.step_size: 
-            self.current_goal_index += 1
-            self.get_logger().info(f"Looking for goal {self.current_goal_index}")
-            self.get_logger().info(f"Current position: {self.odom.pose.pose.position.x}, {self.odom.pose.pose.position.y}")
         else:
             self.current_goal_index += 1
             self.get_logger().info(f"Goal {self.current_goal_index} reached")
@@ -107,7 +103,7 @@ class GoToGoal(Node):
             if any(lectura > 800 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
-                print('ESTORBAAAS')
+                print('Obstacle detected')
 
                 lightring = LightringLeds()
                 lightring.override_system = True
@@ -130,76 +126,70 @@ class RRTStarNode:
         self.x, self.y = x, y
         self.parent = None
         self.cost = 0.0
-
-def is_valid_point(img, x, y, robot_diameter):
-    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), robot_diameter, 255, thickness=1)
-    return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
-
-def nearest_node(nodes, x, y):
-    distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
-    return nodes[np.argmin(distances)]
-
-def new_point(x_rand, y_rand, x_near, y_near, step_size):
-    theta = math.atan2(y_rand - y_near, x_rand - x_near)
-    return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
-
-def has_collision(img, x1, y1, x2, y2, robot_diameter):
-    points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
-    return any(not is_valid_point(img, int(x), int(y), robot_diameter) for x, y in points)
-
-def rrt_star(img, start, goal, step_size_cm, max_iter, rewiring_radius_cm, robot_diameter):
-    nodes, img_with_path, points = [RRTStarNode(*start)], np.copy(img), []
-    goal_node = None
+        
+def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
+    nodes = [RRTStarNode(*start)]
+    img_with_path = np.copy(img)
+    goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.2:  # Ajusta el umbral según tus necesidades
-            x_rand, y_rand = goal
+        if random.uniform(0, 1) < 0.2:
+            x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
+            y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
-            if random.uniform(0, 1) < 0.8: # Genera puntos cercanos al objetivo con una probabilidad más alta
-                x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
-                y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
-            else:
-                x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
+            x_rand, y_rand = random.randint(0, img.shape[1] - 1), random.randint(0, img.shape[0] - 1)
 
-        
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
-        if is_valid_point(img, int(x_new), int(y_new), robot_diameter):
-            node_new = RRTStarNode(int(x_new), int(y_new))
-            near_nodes = [node for node in nodes if math.hypot(node.x - node_new.x, node.y - node_new.y) < rewiring_radius_cm]
-            min_cost_node = nearest_node(near_nodes, x_new, y_new)
+        if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
+            node_new = Node(int(x_new), int(y_new))
 
-            if not has_collision(img, min_cost_node.x, min_cost_node.y, node_new.x, node_new.y, robot_diameter):
-                node_new.parent = min_cost_node
-                node_new.cost = min_cost_node.cost + math.hypot(node_new.x - min_cost_node.x, node_new.y - min_cost_node.y)
-
-                for near_node in near_nodes:
-                    new_cost = node_new.cost + math.hypot(node_new.x - near_node.x, node_new.y - near_node.y)
-                    if new_cost < near_node.cost and not has_collision(img, node_new.x, node_new.y, near_node.x, near_node.y, robot_diameter):
-                        near_node.parent, near_node.cost = node_new, new_cost
+            if not has_collision(img, nearest.x, nearest.y, node_new.x, node_new.y, diametro_robot):
+                node_new.parent = nearest
+                node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
 
                 nodes.append(node_new)
-                cv2.line(img_with_path, (min_cost_node.x, min_cost_node.y), (node_new.x, node_new.y), (200, 200, 200), 1)
 
-                if not points and not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], robot_diameter):
-                    goal_node = RRTStarNode(*goal)
-                    goal_node.parent = node_new
-                    goal_node.cost = node_new.cost + math.hypot(goal_node.x - node_new.x, goal_node.y - node_new.y)
-                    nodes.append(goal_node)
-                    cv2.line(img_with_path, (node_new.x, node_new.y), (goal_node.x, goal_node.y), (0, 255, 0), 2)
+                cv2.circle(img_with_path, (node_new.x, node_new.y), 1, (0, 0, 255), -1)
+                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
+                
+                if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) <= step_size_cm):
+                    if not goal_reached:
+                        penult_nodo = node_new
+                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
+                        goal_reached = True
+                    if (node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < coste_total:
+                        penult_nodo = node_new
+                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
+                   
+    if goal_reached:
+        goal_node = Node(*goal)
+        goal_node.parent = penult_nodo
+        goal_node.cost = coste_total
+        nodes.append(goal_node)
 
-                if goal_node in nodes:
-                    current_node = goal_node
-                    while current_node.parent is not None:
-                        cv2.line(img_with_path, (current_node.x, current_node.y), (current_node.parent.x, current_node.parent.y), (0, 255, 0), 2)
-                        points.append((float(current_node.x * 0.01), float(current_node.y * 0.01)))
-                        current_node = current_node.parent
-                    points.reverse()
+        start_node = Node(*start)
+        start_node.parent = None
+        start_node.cost = 0.0
 
-                    return img_with_path, points, start, goal
-
-    return img_with_path, points, start, goal
+        nodos = []
+        current_node = goal_node
+        while current_node.parent is not None:
+            nodos.insert(0, current_node)
+            current_node = current_node.parent
+        nodos.insert(0, start_node)
+        
+        nodos_simp=simplify_path(nodos, img, diametro_robot)
+        
+        for node in nodos:
+            if node.parent is not None:
+                cv2.line(img_with_path, (node.x, node.y), (node.parent.x, node.parent.y), (0, 255, 0), 2)
+            cv2.circle(img_with_path, (node.x, node.y), 2, (0, 0, 255), -1)  
+        for i in range(1, len(nodos_simp)):
+            cv2.line(img_with_path, (nodos_simp[i - 1].x, nodos_simp[i - 1].y), (nodos_simp[i].x, nodos_simp[i].y), (0, 255, 0), 3)
+            cv2.circle(img_with_path, (nodos_simp[i].x, nodos_simp[i].y), 3, (0, 0, 255), -1)
+        return img_with_path, nodos_simp
 
 def mouse_callback(event, x, y, flags, params):
     if event == cv2.EVENT_LBUTTONUP:
@@ -220,17 +210,16 @@ def main(args=None):
 
     img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    step_size_cm = float(input("Enter step size (in cm): "))
-    max_iterations = 1000000
-    rewiring_radius_cm = float(input("Enter rewiring radius (in cm): "))
-    robot_diameter = int(input("Enter robot diameter (in cm): "))
+    step_size_cm = 20 #float(input("Enter step size (in cm): "))
+    max_iterations = 250
+    robot_diameter = 40 #int(input("Enter robot diameter (in cm): "))
 
     while end_program:            
         if first or (choice == 'C'):
             if (choice == 'C'):
                 rclpy.init(args=args)
                 
-            initializer = GoToGoalInitializer()
+            initializer = GetInitialPosition()
             rclpy.spin_once(initializer)
             initializer.destroy_node()
             start = (int(initializer.initial_position[1] * 100), int(initializer.initial_position[0] * 100))
@@ -245,7 +234,7 @@ def main(args=None):
                 cv2.waitKey(1)
             goal = goal[0]
         
-            img_with_path, trajectory, _, _ = rrt_star(img, start, goal, step_size_cm, max_iterations, rewiring_radius_cm, robot_diameter)
+            img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
         
             draw_marker_on_image(img_with_path, 'start', start)
             draw_marker_on_image(img_with_path, 'goal', goal)
