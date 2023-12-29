@@ -105,6 +105,21 @@ class GoToGoal(Node):
             lightring.leds = [cp.green, cp.green, cp.green, cp.green, cp.green, cp.green]
             self.last_lightring = lightring
 
+            ### PRUEBA CON AUDIO ###
+            audio_msg = AudioNoteVector()
+            audio_msg.header.stamp = self.odom.header.stamp
+            audio_msg.append = True  # Puedes ajustar esto según tus necesidades
+
+            # Agregar notas para reproducir un sonido específico
+            # Puedes ajustar la frecuencia y la duración según tus necesidades
+            note = AudioNote()
+            note.frequency = 1000  # Ajustar la frecuencia
+            note.max_runtime.sec = 1  # Ajustar la duración en segundos
+            audio_msg.notes.append(note)
+
+            self.audio_publisher.publish(audio_msg)
+            ### PRUEBA CON AUDIO ###
+
         else:
             if any(lectura > 800 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
