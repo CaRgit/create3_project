@@ -273,7 +273,7 @@ def main(args=None):
                 cv2.waitKey(1)
             goal = goal[0]
         
-            img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, diametro_robot)
+            img_with_path, nodes = rrt_star(img, start, goal, step_size_cm, max_iterations, robot_diameter)
         
             draw_marker_on_image(img_with_path, 'start', start)
             draw_marker_on_image(img_with_path, 'goal', goal)
