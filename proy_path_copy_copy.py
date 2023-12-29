@@ -118,7 +118,7 @@ class GoToGoal(Node):
             self.last_lightring = lightring
 
             ### PRUEBA CON AUDIO ###
-            self.audio_publisher.publish(audio_msg)
+            self.audio_publisher.publish(self.audio_msg)
             ### PRUEBA CON AUDIO ###
 
         else:
