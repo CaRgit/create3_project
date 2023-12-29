@@ -281,7 +281,7 @@ def main(args=None):
             cv2.waitKey(1)
             cv2.imwrite("final_solution.png", img_with_path, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
         
-            minimal_publisher = GoToGoal(nodes, step_size_cm)
+            minimal_publisher = GoToGoal(nodes)
             while rclpy.ok() and not minimal_publisher.end_of_goals:
                 rclpy.spin_once(minimal_publisher, timeout_sec=0.1)
             minimal_publisher.destroy_node()
