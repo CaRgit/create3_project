@@ -40,8 +40,6 @@ def simplify_path(nodes, img, diametro_robot):
     simplified_nodes.append(nodes[-1])
     return simplified_nodes
 
-
-
 def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         click_coordinates, img_with_markers = param
@@ -61,7 +59,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     goal_reached = False
 
     for _ in range(max_iter):
-        if random.uniform(0, 1) < 0.1:
+        if random.uniform(0, 1) < 0.2:
             x_rand = random.uniform(max(0, goal[0] - 50), min(img.shape[1] - 1, goal[0] + 50))
             y_rand = random.uniform(max(0, goal[1] - 50), min(img.shape[0] - 1, goal[1] + 50))
         else:
