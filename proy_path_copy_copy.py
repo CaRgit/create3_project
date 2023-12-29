@@ -180,7 +180,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
         if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
-            node_new = Node(int(x_new), int(y_new))
+            node_new = RRTStarNode(int(x_new), int(y_new))
 
             if not has_collision(img, nearest.x, nearest.y, node_new.x, node_new.y, diametro_robot):
                 node_new.parent = nearest
@@ -201,12 +201,12 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
                         coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
                    
     if goal_reached:
-        goal_node = Node(*goal)
+        goal_node = RRTStarNode(*goal)
         goal_node.parent = penult_nodo
         goal_node.cost = coste_total
         nodes.append(goal_node)
 
-        start_node = Node(*start)
+        start_node = RRTStarNode(*start)
         start_node.parent = None
         start_node.cost = 0.0
 
