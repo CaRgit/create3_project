@@ -148,7 +148,7 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
     return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
 def simplify_path(nodes, img, diametro_robot):
-    simplified_nodes = [nodes[0]]  
+    simplified_nodes = [(float(nodes[0].x * 0.01), float(nodes[0].y * 0.01))]  
     for i in range(1, len(nodes)):
         current_node = simplified_nodes[-1]
         next_node = nodes[i]
@@ -159,8 +159,8 @@ def simplify_path(nodes, img, diametro_robot):
             else:
                 break
         if i < len(nodes):
-            simplified_nodes.append(nodes[i-1])
-    simplified_nodes.append(nodes[-1])
+            simplified_nodes.append([(float(nodes[i-1].x * 0.01), float(nodes[i-1].y * 0.01))])
+    simplified_nodes.append([(float(nodes[-1].x * 0.01), float(nodes[-1].y * 0.01))])
     return simplified_nodes
         
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
