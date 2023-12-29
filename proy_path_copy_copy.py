@@ -5,6 +5,7 @@ from nav_msgs.msg import Odometry
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 from irobot_create_msgs.msg import IrIntensityVector
+from irobot_create_msgs.msg import AudioNoteVector
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import math
 import cv2
@@ -36,7 +37,8 @@ class GoToGoal(Node):
         super().__init__("GoToGoalNode")
         
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
+        self.lights_publisher = self.create_publisher(LightringLeds, '/cmd_lightring', 10)
+        self.audio_publisher = self.create_publisher(AudioNoteVector, '/cmd_audio', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
