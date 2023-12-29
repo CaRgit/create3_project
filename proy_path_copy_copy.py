@@ -228,7 +228,7 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
 
         path=[]
         for nodo_simp in nodos_simp:
-            points.append((float(nodo_simp.x * 0.01), float(nodo_simp.y * 0.01)))
+            path.append((float(nodo_simp.x * 0.01), float(nodo_simp.y * 0.01)))
             
         return img_with_path, path
 
