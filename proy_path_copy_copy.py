@@ -47,7 +47,6 @@ class GoToGoal(Node):
         self.last_lightring.override_system = True 
         
         self.path = points
-        self.step_size = step_size_cm
         self.ir=[]
         self.current_goal_index = 0
         self.end_of_goals = False
