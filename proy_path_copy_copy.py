@@ -48,6 +48,17 @@ class GoToGoal(Node):
         self.odom = Odometry()
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = True 
+        ### PRUEBA CON AUDIO ###
+        self.audio_msg = AudioNoteVector()
+        self.audio_msg.header.stamp = self.odom.header.stamp
+        self.audio_msg.append = True 
+        # Agregar notas para reproducir un sonido específico
+        # Ajustar la frecuencia y la duración de las notas
+        self.note = AudioNote()
+        self.note.frequency = 1000  # Ajustar la frecuencia
+        self.note.max_runtime.sec = 2  # Ajustar la duración en segundos
+        self.audio_msg.notes.append(self.note)
+        ### PRUEBA CON AUDIO ###
         
         self.path = points
         self.ir=[]
@@ -107,17 +118,6 @@ class GoToGoal(Node):
             self.last_lightring = lightring
 
             ### PRUEBA CON AUDIO ###
-            audio_msg = AudioNoteVector()
-            audio_msg.header.stamp = self.odom.header.stamp
-            audio_msg.append = True  # Puedes ajustar esto según tus necesidades
-
-            # Agregar notas para reproducir un sonido específico
-            # Puedes ajustar la frecuencia y la duración según tus necesidades
-            note = AudioNote()
-            note.frequency = 1000  # Ajustar la frecuencia
-            note.max_runtime.sec = 1  # Ajustar la duración en segundos
-            audio_msg.notes.append(note)
-
             self.audio_publisher.publish(audio_msg)
             ### PRUEBA CON AUDIO ###
 
