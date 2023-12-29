@@ -227,8 +227,8 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
             cv2.circle(img_with_path, (nodos_simp[i].x, nodos_simp[i].y), 3, (0, 0, 255), -1)
 
         path=[]
-        for points in nodos_simp
-            points.append((float(nodos_simp.x * 0.01), float(nodos_simp.y * 0.01)))
+        for nodo_simp in nodos_simp:
+            points.append((float(nodo_simp.x * 0.01), float(nodo_simp.y * 0.01)))
             
         return img_with_path, path
 
