@@ -32,7 +32,7 @@ class GetInitialPosition(Node):
 ### GO TO GOAL ###
 
 class GoToGoal(Node):
-    def __init__(self, points, step_size_cm):
+    def __init__(self, points):
         super().__init__("GoToGoalNode")
         
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
