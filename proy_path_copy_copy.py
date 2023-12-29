@@ -50,14 +50,13 @@ class GoToGoal(Node):
         self.last_lightring.override_system = True 
         ### PRUEBA CON AUDIO ###
         self.audio_msg = AudioNoteVector()
-        #self.audio_msg.header.stamp = self.odom.header.stamp
         self.audio_msg.append = True 
-        # Agregar notas para reproducir un sonido específico
-        # Ajustar la frecuencia y la duración de las notas
-        self.note = AudioNote()
-        self.note.frequency = 1000  # Ajustar la frecuencia
-        self.note.max_runtime.sec = 2  # Ajustar la duración en segundos
-        self.audio_msg.notes.append(self.note)
+        notes_data = [(1047, 0.2), (1175, 0.2), (1319, 0.2)]# Frecuencia y duración para la nota
+        for frequency, duration in notes_data:
+            note = AudioNote()
+            note.frequency = frequency
+            note.max_runtime.sec = duration
+            self.audio_msg.notes.append(note)
         ### PRUEBA CON AUDIO ###
         
         self.path = points
