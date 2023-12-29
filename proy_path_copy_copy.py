@@ -12,39 +12,45 @@ import numpy as np
 import random
 import time
 
+### GET INITIAL POSITION ###
+
 class GetInitialPosition(Node):
     def __init__(self):
         super().__init__("GetInitialPosition")
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        #self.initial_position_set = False
         self.start_time = time.time()
 
     def odom_callback(self, data):
         current_time = time.time()
-        while not (current_time - self.start_time) >= 1:
+        self.get_logger().info(f"Getting initial position...")
+        while not (current_time - self.start_time) >= 2:
             time.sleep(0.1)
             current_time = time.time()
         self.initial_position = (data.pose.pose.position.x, data.pose.pose.position.y)
         self.get_logger().info(f"Initial position set: {self.initial_position}")
 
+### GO TO GOAL ###
+
 class GoToGoal(Node):
     def __init__(self, points, step_size_cm):
         super().__init__("GoToGoalNode")
+        
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        
         self.timer = self.create_timer(0.1, self.go_to_goal)
+        
         self.odom = Odometry()
+        self.last_lightring = LightringLeds()
+        self.last_lightring.override_system = True 
+        
         self.path = points
         self.step_size = step_size_cm
-        self.media = 0
         self.ir=[]
         self.current_goal_index = 0
         self.end_of_goals = False
-
-        self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
-        self.last_lightring = LightringLeds()
-        self.last_lightring.override_system = True        
 
     def odom_callback(self, data):
         self.odom = data
@@ -54,7 +60,7 @@ class GoToGoal(Node):
         for reading in msg.readings:
             intensity_value = reading.value
             self.ir.append(intensity_value)
-        #self.media = np.mean([self.ir[2], self.ir[3], self.ir[4]])    
+        #Para acceder a los valores ir por separado: ([self.ir[2], self.ir[3], self.ir[4]], ...)    
 
     def go_to_goal(self):
         goal = Odometry()
@@ -76,12 +82,11 @@ class GoToGoal(Node):
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
 
-        kp_ang, kp_lin = 10, 5
+        kp_ang, kp_lin = 8, 4
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
             new_vel.linear.x = max(0, (1 - abs(angle_error)*2 / math.pi) * kp_lin * distance_to_goal)
-            print(new_vel.linear.x)
         else:
             self.current_goal_index += 1
             self.get_logger().info(f"Goal {self.current_goal_index} reached")
@@ -117,15 +122,47 @@ class GoToGoal(Node):
                 self.last_lightring = lightring
 
         self.cmd_vel_pub.publish(new_vel)
-
         self.lights_publisher.publish(lightring)
 
+### GET PATH (RRT STAR) ###
 
 class RRTStarNode:
     def __init__(self, x, y):
         self.x, self.y = x, y
         self.parent = None
         self.cost = 0.0
+
+def is_valid_point(img, x, y, diametro_robot):
+    mask = cv2.circle(np.zeros_like(img, dtype=np.uint8), (x, y), int(2*diametro_robot/3), 255, thickness=1)
+    return not np.any(img[mask == 255] == 0) and 0 <= x < img.shape[1] and 0 <= y < img.shape[0] and img[y, x] != 0
+
+def nearest_node(nodes, x, y):
+    distances = np.sqrt((np.array([node.x for node in nodes]) - x)**2 + (np.array([node.y for node in nodes]) - y)**2)
+    return nodes[np.argmin(distances)]
+
+def new_point(x_rand, y_rand, x_near, y_near, step_size):
+    theta = math.atan2(y_rand - y_near, x_rand - x_near)
+    return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
+
+def has_collision(img, x1, y1, x2, y2, diametro_robot):
+    points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
+    return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
+
+def simplify_path(nodes, img, diametro_robot):
+    simplified_nodes = [nodes[0]]  
+    for i in range(1, len(nodes)):
+        current_node = simplified_nodes[-1]
+        next_node = nodes[i]
+        while i < len(nodes) and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
+            i += 1
+            if i < len(nodes):
+                next_node = nodes[i]
+            else:
+                break
+        if i < len(nodes):
+            simplified_nodes.append(nodes[i-1])
+    simplified_nodes.append(nodes[-1])
+    return simplified_nodes
         
 def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
     nodes = [RRTStarNode(*start)]
@@ -202,6 +239,8 @@ def draw_marker_on_image(img_with_markers, label, point):
     cv2.putText(img_with_markers, label, (int(point[0]) + 10, int(point[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return img_with_markers
 
+### MAIN FUNCTION ###
+
 def main(args=None):
     rclpy.init(args=args)
     first = True
@@ -211,7 +250,7 @@ def main(args=None):
     img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     step_size_cm = 20 #float(input("Enter step size (in cm): "))
-    max_iterations = 250
+    max_iterations = 250 #int(input("Max iterations for RRT star: "))
     robot_diameter = 40 #int(input("Enter robot diameter (in cm): "))
 
     while end_program:            
