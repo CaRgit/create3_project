@@ -5,7 +5,7 @@ from nav_msgs.msg import Odometry
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 from irobot_create_msgs.msg import IrIntensityVector
-from irobot_create_msgs.msg import AudioNoteVector
+from irobot_create_msgs.msg import AudioNote
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import math
 import cv2
