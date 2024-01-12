@@ -51,7 +51,7 @@ class GoToGoal(Node):
         ### PRUEBA CON AUDIO ###
         self.audio_msg = AudioNoteVector()
         self.audio_msg.append = True 
-        notes_data = [(1040, 1), (1170, 1), (1310, 1)]# Frecuencia y duración (segundos) para la nota
+        notes_data = [(523, 0.2), (523, 0.2), (523, 0.2), (523, 0.5), (415, 0.5), (466, 0.5), (523, 0.3), (466, 0.2), (523, 1)] #[(1040, 1), (1170, 1), (1310, 1)]# Frecuencia y duración (segundos) para la nota
         for frequency, duration in notes_data:
             note = AudioNote()
             note.frequency = frequency
