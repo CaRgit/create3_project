@@ -90,10 +90,16 @@ class GoToGoal(Node):
         yaw = math.atan2(2 * (self.odom.pose.pose.orientation.w * self.odom.pose.pose.orientation.z + self.odom.pose.pose.orientation.x * self.odom.pose.pose.orientation.y), 1 - 2 * (self.odom.pose.pose.orientation.y ** 2 + self.odom.pose.pose.orientation.z ** 2))
         angle_error = angle_to_goal - yaw
 
-        if angle_error > math.pi:
+        '''if angle_error > math.pi:
             angle_error -= 2 * math.pi
         elif angle_error < -math.pi:
-            angle_error += 2 * math.pi
+            angle_error += 2 * math.pi'''
+        angle_err_clockwise=(angle_to_goal-yaw) % (2*math.pi)
+        angle_err_anticlockwise=(yaw-angle_to_goal) % (2*math.pi)
+        if angle_err_anticlockwise<angle_err_anticlockwise:
+            angle_error=angle_err_clockwise
+        else:
+            angle_error=angle_err_anticlockwise
         print(angle_error)
 
         kp_ang, kp_lin = 15, 4
