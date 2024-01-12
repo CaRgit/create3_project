@@ -96,7 +96,7 @@ class GoToGoal(Node):
             angle_error += 2 * math.pi
         print(angle_error)
 
-        kp_ang, kp_lin = 10, 4
+        kp_ang, kp_lin = 15, 4
 
         if abs(distance_to_goal) > distance_tolerance:
             new_vel.angular.z = kp_ang * angle_error
