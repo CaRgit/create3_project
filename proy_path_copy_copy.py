@@ -94,6 +94,7 @@ class GoToGoal(Node):
             angle_error -= 2 * math.pi
         elif angle_error < -math.pi:
             angle_error += 2 * math.pi
+        print(angle_error)
 
         kp_ang, kp_lin = 10, 4
 
