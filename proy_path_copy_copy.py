@@ -58,6 +58,16 @@ class GoToGoal(Node):
             note.max_runtime.nanosec = int(duration * 1000000000)
             #note.max_runtime.sec = duration
             self.audio_msg.notes.append(note)
+
+        self.audio_msg2 = AudioNoteVector()
+        self.audio_msg2.append = True 
+        notes_data = [(523, 0.1)] #[(1310, 1)]# Frecuencia y duración (segundos) para la nota
+        for frequency, duration in notes_data:
+            note = AudioNote()
+            note.frequency = frequency
+            note.max_runtime.nanosec = int(duration * 1000000000)
+            #note.max_runtime.sec = duration
+            self.audio_msg2.notes.append(note)
         ### PRUEBA CON AUDIO ###
         
         self.path = points
