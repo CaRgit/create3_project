@@ -129,11 +129,10 @@ class GoToGoal(Node):
 
             ### PRUEBA CON AUDIO ###
             self.audio_publisher.publish(self.audio_msg)
-            self.audio_publisher.publish(self.audio_msg)
             ### PRUEBA CON AUDIO ###
 
         else:
-            if any(lectura > 200 for lectura in self.ir): 
+            if any(lectura > 150 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 print('Obstacle detected')
@@ -141,6 +140,7 @@ class GoToGoal(Node):
                 lightring = LightringLeds()
                 lightring.override_system = True
                 lightring.leds = [cp.red, cp.red, cp.red, cp.red, cp.red, cp.red]
+                self.audio_publisher.publish(self.audio_msg2)
                 self.last_lightring = lightring
             
             elif(self.last_lightring.override_system == True):
