@@ -61,12 +61,11 @@ class GoToGoal(Node):
 
         self.audio_msg2 = AudioNoteVector()
         self.audio_msg2.append = True 
-        notes_data = [(987, 0.2)] # Frecuencia y duración (segundos) para la nota
+        notes_data = [(987, 0.2)]
         for frequency, duration in notes_data:
             note = AudioNote()
             note.frequency = frequency
             note.max_runtime.nanosec = int(duration * 1000000000)
-            #note.max_runtime.sec = duration
             self.audio_msg2.notes.append(note)
         ### PRUEBA CON AUDIO ###
         
@@ -135,6 +134,7 @@ class GoToGoal(Node):
             if any(lectura > 50 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
+                self.cmd_vel_pub.publish(new_vel)
                 print('Obstacle detected')
 
                 lightring = LightringLeds()
@@ -145,12 +145,12 @@ class GoToGoal(Node):
                 time.sleep(0.5)
             
             elif(self.last_lightring.override_system == True):
+                self.cmd_vel_pub.publish(new_vel)
                 lightring = LightringLeds()
                 lightring.override_system = True
                 lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
                 self.last_lightring = lightring
 
-        self.cmd_vel_pub.publish(new_vel)
         self.lights_publisher.publish(lightring)
 
 ### GET PATH (RRT STAR) ###
