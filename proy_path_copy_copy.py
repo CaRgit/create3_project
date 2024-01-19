@@ -119,6 +119,7 @@ class GoToGoal(Node):
 
             ### PRUEBA CON AUDIO ###
             self.audio_publisher.publish(self.audio_msg)
+            self.audio_publisher.publish(self.audio_msg)
             ### PRUEBA CON AUDIO ###
 
         else:
