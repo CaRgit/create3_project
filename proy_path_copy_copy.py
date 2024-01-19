@@ -132,7 +132,7 @@ class GoToGoal(Node):
             ### PRUEBA CON AUDIO ###
 
         else:
-            if any(lectura > 25 for lectura in self.ir): 
+            if any(lectura > 50 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 print('Obstacle detected')
