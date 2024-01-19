@@ -174,7 +174,7 @@ def new_point(x_rand, y_rand, x_near, y_near, step_size):
     return x_near + step_size * math.cos(theta), y_near + step_size * math.sin(theta)
 
 def has_collision(img, x1, y1, x2, y2, diametro_robot):
-    points = np.column_stack((np.linspace(x1, x2, 100), np.linspace(y1, y2, 100)))
+    points = np.column_stack((np.linspace(x1, x2, 75), np.linspace(y1, y2, 75)))
     return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
 def simplify_path(nodes, img, diametro_robot):
@@ -285,9 +285,9 @@ def main(args=None):
 
     img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    step_size_cm = 40 #float(input("Enter step size (in cm): "))
-    max_iterations = 200 #int(input("Max iterations for RRT star: "))
-    robot_diameter = 40 #int(input("Enter robot diameter (in cm): "))
+    step_size_cm = 25 #float(input("Enter step size (in cm): "))
+    max_iterations = 250 #int(input("Max iterations for RRT star: "))
+    robot_diameter = 45 #int(input("Enter robot diameter (in cm): "))
 
     while end_program:            
         if first or (choice == 'C'):
