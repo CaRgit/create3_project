@@ -131,7 +131,7 @@ class GoToGoal(Node):
             ### PRUEBA CON AUDIO ###
 
         else:
-            if any(lectura > 50 for lectura in self.ir): 
+            if any(lectura > 150 for lectura in self.ir): 
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 self.cmd_vel_pub.publish(new_vel)
