@@ -285,7 +285,7 @@ def main(args=None):
 
     img_path = './mapa.png'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    step_size_cm = 40 #float(input("Enter step size (in cm): "))
+    step_size_cm = 25 #float(input("Enter step size (in cm): "))
     max_iterations = 250 #int(input("Max iterations for RRT star: "))
     robot_diameter = 40 #int(input("Enter robot diameter (in cm): "))
 
