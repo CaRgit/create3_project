@@ -22,7 +22,7 @@ class GetInitialPosition(Node):
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.start_time = time.time()
 
-    def odom_callback(self, data):
+    def odom_callback(self, data): # Se descartan las primeras lecturas (imprecisas)
         current_time = time.time()
         self.get_logger().info(f"Getting initial position...")
         while not (current_time - self.start_time) >= 2:
@@ -46,9 +46,10 @@ class GoToGoal(Node):
         self.timer = self.create_timer(0.1, self.go_to_goal)
         
         self.odom = Odometry()
+        
         self.last_lightring = LightringLeds()
         self.last_lightring.override_system = True 
-        ### PRUEBA CON AUDIO ###
+        
         self.audio_msg = AudioNoteVector()
         self.audio_msg.append = True 
         notes_data = [(1046, 0.2), (1046, 0.2), (1046, 0.2), (1046, 0.5), (830, 0.5), (932, 0.5), (1046, 0.3), (932, 0.2), (1046, 1)] #[(1310, 1)]# Frecuencia y duración (segundos) para la nota
@@ -58,7 +59,6 @@ class GoToGoal(Node):
             note.max_runtime.nanosec = int(duration * 1000000000)
             #note.max_runtime.sec = duration
             self.audio_msg.notes.append(note)
-
         self.audio_msg2 = AudioNoteVector()
         self.audio_msg2.append = True 
         notes_data = [(987, 0.2)]
@@ -67,18 +67,16 @@ class GoToGoal(Node):
             note.frequency = frequency
             note.max_runtime.nanosec = int(duration * 1000000000)
             self.audio_msg2.notes.append(note)
-        ### PRUEBA CON AUDIO ###
         
         self.path = points
-        self.ir=[]
         self.current_goal_index = 0
         self.end_of_goals = False
+        self.ir=[]
 
     def odom_callback(self, data):
         self.odom = data
 
     def ir_callback(self, msg):
-        self.ir = []
         for reading in msg.readings:
             intensity_value = reading.value
             self.ir.append(intensity_value)
@@ -126,9 +124,7 @@ class GoToGoal(Node):
             lightring.leds = [cp.green, cp.green, cp.green, cp.green, cp.green, cp.green]
             self.last_lightring = lightring
 
-            ### PRUEBA CON AUDIO ###
             self.audio_publisher.publish(self.audio_msg)
-            ### PRUEBA CON AUDIO ###
 
         else:
             if any(lectura > 150 for lectura in self.ir): 
@@ -331,11 +327,11 @@ def main(args=None):
                 return
             else:
                 print('Invalid choice.')
-
         if first:
             first = False
-        
         choice = input("C --> Continue, E --> End: ")
+
+
 
 class ColorPalette():
     """ Helper Class to define frequently used colors"""
@@ -352,7 +348,6 @@ class ColorPalette():
         self.default = LedColor(red=1,green=1,blue=1)
 
 class Lights():
-    """ Class to tell the robot to set lightring lights as part of dance sequence"""
     def __init__(self, led_colors):
         """
         Parameters
@@ -361,6 +356,8 @@ class Lights():
             The list of 6 LedColors corresponding to the 6 LED lights on the lightring
         """
         self.led_colors = led_colors
+
+
 
 if __name__ == '__main__':
     main()
