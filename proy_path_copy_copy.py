@@ -2,11 +2,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from irobot_create_msgs.msg import LedColor
-from irobot_create_msgs.msg import LightringLeds
-from irobot_create_msgs.msg import IrIntensityVector
-from irobot_create_msgs.msg import AudioNoteVector
-from irobot_create_msgs.msg import AudioNote
+from irobot_create_msgs.msg import LedColor, LightringLeds, IrIntensityVector, AudioNoteVector, AudioNote
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 import math
 import cv2
@@ -36,10 +32,12 @@ class GetInitialPosition(Node):
 class GoToGoal(Node):
     def __init__(self, points):
         super().__init__("GoToGoalNode")
-        
+
+        # Se actua sobre la velocidad, los led y el altavoz
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.lights_publisher = self.create_publisher(LightringLeds, '/cmd_lightring', 10)
         self.audio_publisher = self.create_publisher(AudioNoteVector, '/cmd_audio', 10)
+        # Se obtiene información sobre la posición y las lecturas de los sensores IR
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.subscription = self.create_subscription(IrIntensityVector,'/ir_intensity', self.ir_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
@@ -123,6 +121,7 @@ class GoToGoal(Node):
             lightring.override_system = True
             lightring.leds = [cp.green, cp.green, cp.green, cp.green, cp.green, cp.green]
             self.last_lightring = lightring
+            self.lights_publisher.publish(lightring)
 
             self.audio_publisher.publish(self.audio_msg)
 
@@ -131,13 +130,14 @@ class GoToGoal(Node):
                 new_vel.linear.x = 0.0
                 new_vel.angular.z = 0.0
                 self.cmd_vel_pub.publish(new_vel)
+                
                 print('Obstacle detected')
 
                 lightring = LightringLeds()
                 lightring.override_system = True
                 lightring.leds = [cp.red, cp.red, cp.red, cp.red, cp.red, cp.red]
-                self.audio_publisher.publish(self.audio_msg2)
                 self.last_lightring = lightring
+                self.audio_publisher.publish(self.audio_msg2)
                 time.sleep(0.5)
             
             elif(self.last_lightring.override_system == True):
@@ -145,9 +145,8 @@ class GoToGoal(Node):
                 lightring = LightringLeds()
                 lightring.override_system = True
                 lightring.leds = [cp.blue, cp.blue, cp.blue, cp.blue, cp.blue, cp.blue]
-                self.last_lightring = lightring
-
-        self.lights_publisher.publish(lightring)
+                self.last_lightring = lightring 
+                self.lights_publisher.publish(lightring)
 
 ### GET PATH (RRT STAR) ###
 
