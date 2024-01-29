@@ -71,26 +71,24 @@ def rrt_star(img, start, goal, step_size_cm, max_iter, diametro_robot):
         nearest = nearest_node(nodes, x_rand, y_rand)
         x_new, y_new = new_point(x_rand, y_rand, nearest.x, nearest.y, step_size_cm)
 
-        if is_valid_point(img, int(x_new), int(y_new), diametro_robot):
+        if not has_collision(img, nearest.x, nearest.y, x_new, y_new, diametro_robot):
             node_new = Node(int(x_new), int(y_new))
+            node_new.parent = nearest
+            node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
 
-            if not has_collision(img, nearest.x, nearest.y, node_new.x, node_new.y, diametro_robot):
-                node_new.parent = nearest
-                node_new.cost = nearest.cost + math.sqrt((node_new.x - nearest.x)**2 + (node_new.y - nearest.y)**2)
+            nodes.append(node_new)
 
-                nodes.append(node_new)
-
-                cv2.circle(img_with_path, (node_new.x, node_new.y), 1, (0, 0, 255), -1)
-                cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
-                
-                if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) <= step_size_cm):
-                    if not goal_reached:
-                        penult_nodo = node_new
-                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
-                        goal_reached = True
-                    if (node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < coste_total:
-                        penult_nodo = node_new
-                        coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
+            cv2.circle(img_with_path, (node_new.x, node_new.y), 1, (0, 0, 255), -1)
+            cv2.line(img_with_path, (node_new.x, node_new.y), (node_new.parent.x, node_new.parent.y), (0, 255, 0), 1)
+            
+            if not has_collision(img, node_new.x, node_new.y, goal[0], goal[1], diametro_robot) and ((math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) <= step_size_cm):
+                if not goal_reached:
+                    penult_nodo = node_new
+                    coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
+                    goal_reached = True
+                if (node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)) < coste_total:
+                    penult_nodo = node_new
+                    coste_total = node_new.cost + math.sqrt((goal[0] - node_new.x)**2 + (goal[1] - node_new.y)**2)
                    
     if goal_reached:
         goal_node = Node(*goal)
