@@ -29,7 +29,6 @@ def simplify_path(nodes, img, diametro_robot):
     simplified_nodes = [nodes[0]]  
     i=0
     j=0
-    #for i in range(1, len(nodes)):
     while (i<len(nodes)):
         current_node = simplified_nodes[j]
         next_node = nodes[i]
@@ -43,7 +42,7 @@ def simplify_path(nodes, img, diametro_robot):
         if i < len(nodes):
             simplified_nodes.append(nodes[i-1])
         j += 1    
-    simplified_nodes.append(nodes[i])
+    simplified_nodes.append(nodes[len(nodes)])
     return simplified_nodes
 
 def mouse_callback(event, x, y, flags, param):
