@@ -39,11 +39,11 @@ def simplify_path(nodes, img, diametro_robot):
                 next_node = nodes[i]
             else:
                 break
-        j += 1
+        
         if i < len(nodes):
             simplified_nodes.append(nodes[i-1])
-            
-    simplified_nodes.append(nodes[j])
+        j += 1    
+    simplified_nodes.append(nodes[i])
     return simplified_nodes
 
 def mouse_callback(event, x, y, flags, param):
