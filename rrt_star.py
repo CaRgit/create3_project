@@ -37,7 +37,7 @@ def simplify_path(nodes, img, diametro_robot):
             i += 1
             next_node = nodes[i]
 
-        simplified_nodes.append(nodes[i])
+        simplified_nodes.append(nodes[i-1])
         i += 1
     
     return simplified_nodes
