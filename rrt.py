@@ -27,10 +27,10 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
 
 def simplify_path(nodes, img, diametro_robot):
     simplified_nodes = [nodes[0]]  
-    i=0
+    i=0, j=0
     #for i in range(1, len(nodes)):
     while (i<len(nodes)):
-        current_node = simplified_nodes[-1]
+        current_node = simplified_nodes[j]
         next_node = nodes[i]
         while i < len(nodes) and not has_collision(img, current_node.x, current_node.y, next_node.x, next_node.y, diametro_robot):
             i += 1
@@ -40,7 +40,8 @@ def simplify_path(nodes, img, diametro_robot):
                 break
         if i < len(nodes):
             simplified_nodes.append(nodes[i-1])
-    simplified_nodes.append(nodes[-1])
+        j += 1
+    simplified_nodes.append(nodes[j])
     return simplified_nodes
 
 def mouse_callback(event, x, y, flags, param):
