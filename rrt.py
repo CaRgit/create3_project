@@ -26,7 +26,8 @@ def has_collision(img, x1, y1, x2, y2, diametro_robot):
     return any(not is_valid_point(img, int(x), int(y), diametro_robot) for x, y in points)
 
 def simplify_path(nodes, img, diametro_robot):
-    #simplified_nodes = [nodes[0]]  
+    #simplified_nodes = [nodes[0]] 
+    simplified_nodes = [] 
     i=0
     j=0
     while (i<=len(nodes)):
