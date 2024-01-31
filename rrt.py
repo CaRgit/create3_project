@@ -137,8 +137,8 @@ def main():
     img_path = f'./{"mapa.png"}'
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
-    step_size_cm = float(25) #input("Ingrese el tamaño del paso (en cm): "))
-    max_iterations = int(250)
+    step_size_cm = float(20) #input("Ingrese el tamaño del paso (en cm): "))
+    max_iterations = int(2000)
     diametro_robot = int(40) #input("Ingrese el diametro del robot (en cm): "))
 
     cv2.imshow("Mapa", img)
